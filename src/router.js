@@ -46,7 +46,7 @@ class AppRouter extends React.Component {
             <Route exact path="/task" component={TaskScreen} />
             <Route exact path="/personnel" component={PersonnelScreen} />
             <Route exact path="/message" component={MessageScreen} />
-            {/* <Redirect to="/task" /> */}
+            <Redirect to="/task" />
           </BasicLayout>
         </Switch>
       </Router>
