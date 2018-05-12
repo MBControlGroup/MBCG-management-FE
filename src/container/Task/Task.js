@@ -1,7 +1,9 @@
 // @flow
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
+import { observer, inject } from 'mobx-react';
 
+import unLoginRedirect from '../../component/hoc/unlogin-redirect';
 
 // 样式模块，直接用css书写
 const Container = styled.div`
@@ -14,13 +16,19 @@ const Container = styled.div`
 type PropType = {
 }
 
-function Task(props: PropType) {
-  console.log('hi', props);
-  return (
-    <Container>
-      <p>任务</p>
-    </Container>
-  );
+@inject(stores => ({
+  isLogin: stores.user.isLogin,
+}))
+@unLoginRedirect('/login')
+@observer
+class Task extends Component<PropType> {
+  render() {
+    return (
+      <Container>
+        <p>任务</p>
+      </Container>
+    );
+  }
 }
 
 export default Task;

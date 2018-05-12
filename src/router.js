@@ -12,6 +12,11 @@ const TestScreen = Loadable({
   loading: () => (<p>loading...</p>),
 });
 
+const LoginScreen = Loadable({
+  loader: () => import('./container/Login/Login'),
+  loading: () => (<p>loading...</p>),
+});
+
 const TaskScreen = Loadable({
   loader: () => import('./container/Task/Task'),
   loading: () => (<p>loading...</p>),
@@ -36,15 +41,15 @@ class AppRouter extends React.Component {
     return (
       <Router history={history}>
         <Switch>
+          <Route exact path="/login" component={LoginScreen} />
           <BasicLayout>
             <Route exact path="/task" component={TaskScreen} />
             <Route exact path="/personnel" component={PersonnelScreen} />
             <Route exact path="/message" component={MessageScreen} />
-            <Redirect to="/task" />
+            {/* <Redirect to="/task" /> */}
           </BasicLayout>
         </Switch>
       </Router>
-      
     );
   }
 }
