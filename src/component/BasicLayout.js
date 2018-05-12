@@ -1,7 +1,8 @@
 // @flow
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import styled from 'styled-components';
+import { observer, inject } from 'mobx-react';
 
 import history from '../component/History';
 
@@ -14,6 +15,18 @@ const HeaderTitle = styled.h1`
   font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
   font-weight: normal;
   margin-right: 50px;
+`;
+
+const HeaderExtendGroup = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  .default_icon {
+    margin-left: 10px;
+  }
 `;
 
 type PropType = {
@@ -55,6 +68,7 @@ function Test(props: PropType) {
           <Menu.Item key="2">人事管理</Menu.Item>
           <Menu.Item key="3">消息管理</Menu.Item>
         </Menu>
+        <HeaderExtendGroupWithInject />
       </Header>
       <Content style={{ padding: '0 50px' }}>
         { children }
@@ -65,5 +79,29 @@ function Test(props: PropType) {
     </Layout>
   );
 }
+
+const HeaderExtendGroupComponent = ({ user, nav }) => {
+  return (
+    <HeaderExtendGroup>
+      {user.isLogin ? (
+        <Button
+          type="primary"
+          icon="logout"
+          size="small"
+          onClick={() => {
+            user.logout();
+          }}
+        >
+          登出
+        </Button>
+      ) : null}
+    </HeaderExtendGroup>
+  );
+};
+
+const HeaderExtendGroupWithInject = inject(stores => ({
+  user: stores.user,
+  nav: stores.nav,
+}))(observer(HeaderExtendGroupComponent));
 
 export default Test;
