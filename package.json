@@ -28,7 +28,8 @@
     "build": "react-app-rewired build",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "scp -r ./build root@119.23.201.138:~/projects/mb"
   },
   "devDependencies": {
     "babel-jest": "23.0.0-alpha.0",
