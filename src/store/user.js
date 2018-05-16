@@ -28,7 +28,7 @@ class User {
       password: user.password,
     };
     try {
-      await post('signin', postData);
+      await post('http://private-5648c6-signin13.apiary-mock.com/signin', postData);
       this.setUser(user);
     } finally {
       this.loginIning = false;
@@ -44,7 +44,7 @@ class User {
   @action.bound
   async logout() {
     try {
-      await post('signout', {});
+      await post('http://private-5648c6-signin13.apiary-mock.com/signout', {});
       this.user = null;
       this.isLogin = false;
     } catch (err) {

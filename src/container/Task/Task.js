@@ -76,14 +76,22 @@ const MenuStyled = styled(Menu)`
   clear: both;
 `;
 
-type PropType = {}
+type PropType = {
+  isLogin: boolean,
+  nav: Object,
+}
 
 @inject(stores => ({
   isLogin: stores.user.isLogin,
+  nav: stores.nav,
 }))
 @unLoginRedirect('/login')
 @observer
 class Task extends Component<PropType> {
+  componentWillMount() {
+    this.props.nav.setSelectedKey('nav_1');
+  }
+
   render() {
     return (
       <Container>

@@ -31,10 +31,11 @@ const HeaderExtendGroup = styled.div`
 
 type PropType = {
     children: Object,
+    nav: Object
 }
 
 function Test(props: PropType) {
-  const { children } = props;
+  const { children, nav } = props;
   return (
     <Layout className="layout">
       <Header style={{ display: 'flex', flexDirection: 'row' }}>
@@ -42,20 +43,21 @@ function Test(props: PropType) {
         <Menu
           theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={['1']}
+          selectedKeys={nav.selectedKey.slice()}
           style={{ lineHeight: '64px' }}
           onClick={(item) => {
              console.log(props, item.key);
+             nav.setSelectedKey(item.key);
               switch (item.key) {
-                  case '1': {
+                  case 'nav_1': {
                       history.push('/task');
                       break;
                   }
-                  case '2': {
+                  case 'nav_2': {
                       history.push('/personnel');
                       break;
                   }
-                  case '3': {
+                  case 'nav_3': {
                       history.push('/message');
                       break;
                   }
@@ -64,9 +66,9 @@ function Test(props: PropType) {
               }
           }}
         >
-          <Menu.Item key="1">任务管理</Menu.Item>
-          <Menu.Item key="2">人事管理</Menu.Item>
-          <Menu.Item key="3">消息管理</Menu.Item>
+          <Menu.Item key="nav_1">任务管理</Menu.Item>
+          <Menu.Item key="nav_2">人事管理</Menu.Item>
+          <Menu.Item key="nav_3">消息管理</Menu.Item>
         </Menu>
         <HeaderExtendGroupWithInject />
       </Header>
@@ -104,4 +106,6 @@ const HeaderExtendGroupWithInject = inject(stores => ({
   nav: stores.nav,
 }))(observer(HeaderExtendGroupComponent));
 
-export default Test;
+export default inject(stores => ({
+  nav: stores.nav,
+}))(observer(Test));
