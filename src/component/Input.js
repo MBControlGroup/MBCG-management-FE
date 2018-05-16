@@ -53,11 +53,11 @@ const ColumnContainer = styled.div`
 export default observer(({
   width = 200, height = 34, field, type = 'text', placeholder = null, disable = false,
 }) => {
-  const isThereError = field.error !== null
+  const isThereError = field.error !== null;
   return (
     <InputContainer>
       {field.label === '跳转标题' ? null : (
-        <div style={{ paddingTop: 8, marginRight: 10, width: 40 }}>{`${field.label}:`}</div>
+        <div style={{ paddingTop: 8, marginRight: 10, width: 80 }}>{`${field.label}:`}</div>
         )}
 
       <ColumnContainer>

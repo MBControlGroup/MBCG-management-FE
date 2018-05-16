@@ -266,16 +266,19 @@ function onChange(value) {
 }
 
 type PropType = {
+  isLogin: boolean,
+  nav: Object
 }
 
 @inject(stores => ({
   isLogin: stores.user.isLogin,
+  nav: stores.nav
 }))
 @unLoginRedirect('/login')
 @observer
 class Personnel extends Component<PropType> {
-  componentDidMount() {
-    console.log('hi');
+  componentWillMount() {
+    this.props.nav.setSelectedKey('nav_2');
   }
 
   render() {

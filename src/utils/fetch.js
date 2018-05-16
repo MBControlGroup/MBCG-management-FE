@@ -10,7 +10,8 @@ function myFetch(url, data) {
   const bodyData = {
     data,
   };
-  const realUrl = isProduction ? (productionServer + url) : (mockingServer + url);
+  // const realUrl = isProduction ? (productionServer + url) : (mockingServer + url);
+  const realUrl = url;
   return fetch(realUrl, {
     credentials: 'same-origin',
     method: 'POST',
@@ -78,24 +79,5 @@ async function post(url, data) {
   });
 }
 
-/**
- *
- * @param {string} url  进行匹配的url
- */
-export function handleUrl(url) {
-  if (!url) {
-    return null;
-  }
-  if (url.startsWith('cmd://')) {
-    return null;
-  }
-  if (url.startsWith('api://')) {
-    return post(url.slice(5), {});
-  }
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
-    return url;
-  }
-  return null;
-}
 
 export default post;
