@@ -6,6 +6,7 @@
     "antd": "^3.4.5",
     "babel-eslint": "^8.2.3",
     "babel-plugin-import": "^1.7.0",
+    "commitizen": "^2.10.1",
     "history": "^4.7.2",
     "mitt": "^1.1.3",
     "mobx": "^4.2.0",
@@ -28,7 +29,8 @@
     "build": "react-app-rewired build",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "commit": "git-cz"
   },
   "devDependencies": {
     "babel-jest": "23.0.0-alpha.0",
