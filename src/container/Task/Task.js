@@ -1,62 +1,13 @@
 // @flow
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Menu, Button, Table, Progress } from 'antd';
+import { Modal, Menu, Button } from 'antd';
+
+import TaskTable from './component/TaskTable';
+import TaskCreate from './component/TaskCreate';
+
 import { observer, inject } from 'mobx-react';
-
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
-
-
-const columns = [
-  {
-    title: '任务编号',
-    dataIndex: 'taskID',
-  },
-  {
-    title: '任务主题',
-    dataIndex: 'taskGoal',
-  },
-  {
-    title: '集合地点',
-    dataIndex: 'location',
-  },
-  {
-    title: '响应情况',
-    dataIndex: 'response',
-  },
-  {
-    title: '状态',
-    dataIndex: 'state',
-  },
-  {
-    title: '集合时间',
-    dataIndex: 'date',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    render: () => <a href="javascript:">详情</a>,
-  },
-];
-
-const data = [];
-for (let i = 0; i < 20; i++) {
-  data.push({
-    key: i,
-    taskID: `XX-${i}`,
-    taskGoal: '写代码',
-    location: '大学城',
-    response: <Progress percent={30} />,
-    state: <span role="img">©️集合中</span>,
-    date: '2018-5-12 13:51',
-    operation: '',
-  });
-}
-
-const pagination = {
-  total: 666,
-  showTotal: total => `总共 ${total} 个任务`,
-};
 
 // 样式模块，直接用css书写
 const Container = styled.div`
@@ -77,44 +28,69 @@ const MenuStyled = styled(Menu)`
 `;
 
 type PropType = {
-  isLogin: boolean,
-  nav: Object,
+    isLogin: boolean,
+    nav: Object,
 }
 
 @inject(stores => ({
   isLogin: stores.user.isLogin,
   nav: stores.nav,
 }))
-@unLoginRedirect('/login')
-@observer
+
+// TODO:FIX login
+// @unLoginRedirect('/login')
+// @observer
 class Task extends Component<PropType> {
-  componentWillMount() {
-    this.props.nav.setSelectedKey('nav_1');
-  }
+    state = { taskCreateVisible: false };
 
-  render() {
-    return (
-      <Container>
-        <div>
-          <TaskButton type="primary">+发布任务</TaskButton>
-        </div>
-        <div>
+    componentWillMount() {
+      this.props.nav.setSelectedKey('nav_1');
+    }
 
-          <MenuStyled mode="horizontal">
-            <Menu.Item key="1">正在进行</Menu.Item>
-            <Menu.Item key="2">已完成</Menu.Item>
-          </MenuStyled>
+    showTaskCreate = () => {
+      this.setState({
+        taskCreateVisible: true,
+      });
+    };
 
-          <Table
-            columns={columns}
-            dataSource={data}
-            pagination={pagination}
-          />
+    hideTaskCreate = () => {
+      this.setState({
+        taskCreateVisible: false,
+      });
+    };
 
-        </div>
-      </Container>
-    );
-  }
+    render() {
+      return (
+        <Container>
+          <div>
+            <TaskButton type="primary" onClick={this.showTaskCreate}>
+                        +发布任务
+            </TaskButton>
+          </div>
+          <div>
+            <MenuStyled mode="horizontal">
+              <Menu.Item key="1">正在进行</Menu.Item>
+              <Menu.Item key="2">已完成</Menu.Item>
+            </MenuStyled>
+
+            <TaskTable />
+
+            <Modal
+              title="发布任务"
+              width={960}
+              visible={this.state.taskCreateVisible}
+              okText="发布"
+              onOk={this.hideTaskCreate}
+              cancelText="取消"
+              onCancel={this.hideTaskCreate}
+            >
+              <TaskCreate />
+            </Modal>
+
+          </div>
+        </Container>
+      );
+    }
 }
 
 export default Task;
