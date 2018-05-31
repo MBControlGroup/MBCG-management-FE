@@ -9,6 +9,7 @@ import PersonnelAreaQuery from './component/Personnel-area-query';
 import PersonnelQueryForm from './component/Personnel-query-form';
 import PersonnelTable from './component/Personnel-table';
 
+
 // 样式模块，直接用css书写
 const Container = styled.div`
   background-color: #FFF;
@@ -16,6 +17,7 @@ const Container = styled.div`
   padding: 20px;
   overflow: hidden;
 `;
+
 
 const Data = styled.div`
   margin-top: -10px;
@@ -49,6 +51,7 @@ const files = {
   },
 };
 
+
 type PropType = {
   isLogin: boolean,
   nav: Object
@@ -64,6 +67,7 @@ class Personnel extends Component<PropType> {
   componentWillMount() {
     this.props.nav.setSelectedKey('nav_2');
   }
+
 
   state = {
     modal1Visible: false,
@@ -118,6 +122,7 @@ class Personnel extends Component<PropType> {
           </RowInput>
         </Modal>
       
+
       </Container>
     );
   }
