@@ -12,10 +12,18 @@ class Message {
     @observable messageSum = 0;
     @observable showModal = false;
     @observable showNewMessageModal = false;
+    @observable currentOpenedMessage = null;
+    @observable currentOpenedMessageID = 0;
+    @observable isInitingOpenedMessage = false;
 
     @action.bound
     toggleModal() {
       this.showModal = !this.showModal;
+    }
+
+    @action.bound
+    setCurrentOpenMessage(id) {
+      this.currentOpenedMessageID = id;
     }
 
     @action.bound
@@ -24,16 +32,29 @@ class Message {
     }
 
     @action.bound
+    async getCurrentOpenedMessage() {
+      this.isInitingOpenedMessage = true;
+      try {
+        const { Data } = await post(`https://private-240e1-messagemanagement.apiary-mock.com/BMmanage/${this.currentOpenedMessageID}`, {});
+        this.currentOpenedMessage = Data;
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.isInitingOpenedMessage = false;
+      }
+    }
+
+    @action.bound
     async getMessages() {
       this.isLoadingMessages = true;
       try {
-        const { data } = await post('https://private-240e1-messagemanagement.apiary-mock.com/BMmanage/getAllMes', {
+        const { Data } = await post('https://private-240e1-messagemanagement.apiary-mock.com/BMmanage/getAllMes', {
           pn: this.currentPage,
           pc: this.currentPageSize,
         });
-        console.log(data);
-        this.messageSum = data.count_data;
-        this.currentMessages = data.data;
+        console.log(Data);
+        this.messageSum = Data.Count_data;
+        this.currentMessages = Data.Data;
       } catch (e) {
         console.log(e);
       } finally {

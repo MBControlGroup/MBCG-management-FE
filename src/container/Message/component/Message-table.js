@@ -34,19 +34,19 @@ export default class MessageTable extends Component<Props> {
 //   }
 
   render() {
-    const { isLoadingMessages, getCurrentMessages, toggleModal, showModal } = this.props.message;
+    const { isLoadingMessages, getCurrentMessages, toggleModal, getCurrentOpenedMessage, setCurrentOpenMessage } = this.props.message;
     const columns = [
       {
         title: '消息主题',
-        dataIndex: 'title',
+        dataIndex: 'Title',
       },
       {
         title: '消息内容',
-        dataIndex: 'detail',
+        dataIndex: 'Detail',
       },
       {
         title: '发送方式',
-        dataIndex: 'send_method',
+        dataIndex: 'Send_method',
         render: text => (
           <div>
             {text.map((item) => {
@@ -65,11 +65,11 @@ export default class MessageTable extends Component<Props> {
       },
       {
         title: '创建时间',
-        dataIndex: 'send_time',
+        dataIndex: 'Send_time',
       },
       {
         title: '消息类型',
-        dataIndex: 'bm_type',
+        dataIndex: 'Bm_type',
       },
       {
         title: '操作',
@@ -79,9 +79,11 @@ export default class MessageTable extends Component<Props> {
             <a
               style={{ marginRight: 10 }}
               href="javascript:;"
-              onClick={() => {
+              onClick={async () => {
               // alert(record.bm_id);
                 toggleModal();
+                setCurrentOpenMessage(record.Bm_id);
+                await getCurrentOpenedMessage();
               }}
             >
            详情
@@ -99,7 +101,7 @@ export default class MessageTable extends Component<Props> {
           dataSource={getCurrentMessages}
           pagination={false}
           // bordered
-          rowKey={record => record.bm_id}
+          rowKey={record => record.Bm_id}
           columns={columns}
           // rowSelection={this.getRowSelection()}
         />

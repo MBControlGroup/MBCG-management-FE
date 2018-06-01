@@ -7,8 +7,12 @@ import { Button, Modal } from 'antd';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
 import MessageTable from './component/Message-table';
 import Pagination from '../../component/Pagination';
+import MessageDetail from './component/modal/MessageDetail';
+
+import post from '../../utils/fetch';
 
 import Form, { messageQueryForm } from './component/Message-query-form';
+import MessageCreateForm, { messageCreateForm } from './component/modal/Message-create-form';
 
 // 样式模块，直接用css书写
 const Container = styled.div`
@@ -42,6 +46,24 @@ class Message extends Component<PropType> {
     messageQueryForm.$hooks.onSuccess = (form) => {
       console.log(form.values());
     };
+    messageCreateForm.$hooks.onSuccess = async (form) => {
+      try {
+        console.log(form.values());
+        const { notice_method, ...other } = form.values();
+        await post('https://private-240e1-messagemanagement.apiary-mock.com/BMmanage/createMes', {
+          ...other,
+          wechat_notice: notice_method.indexOf('wechat') !== -1 ? 1 : 0,
+          sms_notice: notice_method.indexOf('sms') !== -1 ? 1 : 0,
+          voice_notice: notice_method.indexOf('voice') !== -1 ? 1 : 0,
+        });
+      } catch(err) {
+        console.log(err);
+      } finally {
+        this.props.message.toggleNewMessageModal();
+      }
+      
+      
+    };
   }
 
   componentDidMount() {
@@ -51,7 +73,7 @@ class Message extends Component<PropType> {
 
   render() {
     const {
-      messageSum, currentPage, setPage, setPageSize, showModal, toggleModal, showNewMessageModal, toggleNewMessageModal
+      messageSum, currentPage, setPage, setPageSize, showModal, toggleModal, showNewMessageModal, toggleNewMessageModal, isInitingOpenedMessage,
     } = this.props.message;
     return (
       <Container>
@@ -81,21 +103,22 @@ class Message extends Component<PropType> {
           title="消息详情"
           visible={showModal}
           footer={null}
+          width={800}
           onCancel={() => toggleModal()}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          {isInitingOpenedMessage ?
+            <p>Loading...</p>
+            : <MessageDetail />
+          }
         </Modal>
         <Modal
           title="新建消息"
           visible={showNewMessageModal}
           footer={null}
+          width={800}
           onCancel={() => toggleNewMessageModal()}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <MessageCreateForm form={messageCreateForm} />
         </Modal>
       </Container>
     );

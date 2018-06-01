@@ -85,7 +85,7 @@ export const TextArea = observer(({
             paddingTop: 8,
             marginRight: 10,
             alignSelf: 'flex-start',
-            width: 40,
+            width: 80,
           }}
       >
         {field.label}:

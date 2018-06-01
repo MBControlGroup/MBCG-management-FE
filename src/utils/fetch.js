@@ -53,22 +53,22 @@ async function post(url, data) {
   if (err) {
     postErrorHandler(err);
     res = null;
-  } else if (res.code === 200 && res.enmsg === 'ok') {
+  } else if (res.Code === 200 && res.Enmsg === 'ok') {
     err = null;
-  } else if (res.code === 300) {
-    err = new Error(res.cnmsg);
+  } else if (res.Code === 300) {
+    err = new Error(res.Cnmsg);
     res = null;
-  } else if (res.code === 302) {
+  } else if (res.Code === 302) {
     // 用户状态失效
     emitter.emit('USER_STATUS_FAILURE');
-  } else if (res.code === 402) {
+  } else if (res.Code === 402) {
     //
   } else {
     notification.error({
-      message: res.cnmsg,
+      message: res.Cnmsg,
       duration: 2,
     });
-    err = new Error(res.cnmsg);
+    err = new Error(res.Cnmsg);
     res = null;
   }
   return new Promise((resolve, reject) => {
