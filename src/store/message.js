@@ -35,8 +35,8 @@ class Message {
     async getCurrentOpenedMessage() {
       this.isInitingOpenedMessage = true;
       try {
-        const { Data } = await post(`https://private-240e1-messagemanagement.apiary-mock.com/BMmanage/${this.currentOpenedMessageID}`, {});
-        this.currentOpenedMessage = Data;
+        const { data } = await post(`https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/BMmanage/${this.currentOpenedMessageID}`, {});
+        this.currentOpenedMessage = data;
       } catch (err) {
         console.log(err);
       } finally {
@@ -48,13 +48,13 @@ class Message {
     async getMessages() {
       this.isLoadingMessages = true;
       try {
-        const { Data } = await post('https://private-240e1-messagemanagement.apiary-mock.com/BMmanage/getAllMes', {
+        const { data } = await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/getAllMes', {
           pn: this.currentPage,
           pc: this.currentPageSize,
         });
-        console.log(Data);
-        this.messageSum = Data.Count_data;
-        this.currentMessages = Data.Data;
+        console.log(data);
+        this.messageSum = data.count_data;
+        this.currentMessages = data.data;
       } catch (e) {
         console.log(e);
       } finally {

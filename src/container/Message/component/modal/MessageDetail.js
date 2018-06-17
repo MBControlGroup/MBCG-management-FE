@@ -23,10 +23,10 @@ const Bold = styled.span`
 const MessageDetail = ({ message }) => (
   <Container>
     <SubContaienr>
-      <p><Bold>消息标题:</Bold>{message.currentOpenedMessage.Data.Title}</p>
-      <p><Bold>消息详情:</Bold>{message.currentOpenedMessage.Data.Detail}</p>
-      <p><Bold>消息类型:</Bold>{message.currentOpenedMessage.Data.Bm_type}</p>
-      <p><Bold>发送方式:</Bold>{message.currentOpenedMessage.Data.Send_method.map((item) => {
+      <p><Bold>消息标题:</Bold>{message.currentOpenedMessage.data.title}</p>
+      <p><Bold>消息详情:</Bold>{message.currentOpenedMessage.data.detail}</p>
+      <p><Bold>消息类型:</Bold>{message.currentOpenedMessage.data.bm_type}</p>
+      <p><Bold>发送方式:</Bold>{message.currentOpenedMessage.data.send_method.map((item) => {
         if (item === 'wechat_notice') {
           return <span>微信公众号；</span>;
         }
@@ -38,7 +38,7 @@ const MessageDetail = ({ message }) => (
         }
       })}
       </p>
-      <p><Bold>发送时间:</Bold>{new Date(parseInt(message.currentOpenedMessage.Data.Send_time) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ')}</p>
+      <p><Bold>发送时间:</Bold>{new Date(parseInt(message.currentOpenedMessage.data.send_time) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ')}</p>
     </SubContaienr>
     <SubContaienr>
       <MessageFeedbackTable />

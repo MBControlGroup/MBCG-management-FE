@@ -38,26 +38,26 @@ export default class MessageTable extends Component<Props> {
     const columns = [
       {
         title: '消息主题',
-        dataIndex: 'Title',
+        dataIndex: 'title',
       },
       {
         title: '消息内容',
-        dataIndex: 'Detail',
+        dataIndex: 'detail',
       },
       {
         title: '发送方式',
-        dataIndex: 'Send_method',
+        dataIndex: 'send_method',
         render: text => (
           <div>
-            {text.map((item) => {
+            {text.map((item, index) => {
                 if (item === 'wechat_notice') {
-                  return <span>微信公众号；</span>;
+                  return <span key={ 'mtype' + index }>微信公众号；</span>;
                 }
                 if (item === 'sms_notice') {
-                  return <span>短信通知；</span>;
+                  return <span key={'mtype' + index}>短信通知；</span>;
                 }
                 if (item === 'voice_notice') {
-                  return <span>语音通知；</span>;
+                  return <span key={'mtype' + index}>语音通知；</span>;
                 }
               })}
           </div>
@@ -65,11 +65,11 @@ export default class MessageTable extends Component<Props> {
       },
       {
         title: '创建时间',
-        dataIndex: 'Send_time',
+        dataIndex: 'send_time',
       },
       {
         title: '消息类型',
-        dataIndex: 'Bm_type',
+        dataIndex: 'bm_type',
       },
       {
         title: '操作',
@@ -82,7 +82,7 @@ export default class MessageTable extends Component<Props> {
               onClick={async () => {
               // alert(record.bm_id);
                 toggleModal();
-                setCurrentOpenMessage(record.Bm_id);
+                setCurrentOpenMessage(record.bm_id);
                 await getCurrentOpenedMessage();
               }}
             >
@@ -101,12 +101,11 @@ export default class MessageTable extends Component<Props> {
           dataSource={getCurrentMessages}
           pagination={false}
           // bordered
-          rowKey={record => record.Bm_id}
+          rowKey={record => record.bm_id}
           columns={columns}
           // rowSelection={this.getRowSelection()}
         />
-      </div>
-      
+      </div> 
     );
   }
 }
