@@ -23,7 +23,7 @@ const TaskScreen = Loadable({
 });
 
 const PersonnelScreen = Loadable({
-  loader: () => import('./container/Personnel/Personnel'),
+  loader: () => import('./container/Personnel/Organization'),
   loading: () => (<p>loading...</p>),
 });
 
