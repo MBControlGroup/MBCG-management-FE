@@ -15,10 +15,10 @@ const formItemLayout = {
 };
 
 const locationOptions = [
-    <Select.Option value="东校区">东校区</Select.Option>,
-    <Select.Option value="南校区">南校区</Select.Option>,
-    <Select.Option value="北校区">北校区</Select.Option>,
-    <Select.Option value="珠海校区">珠海校区</Select.Option>,
+    <Select.Option key="东校区">东校区</Select.Option>,
+    <Select.Option key="南校区">南校区</Select.Option>,
+    <Select.Option key="北校区">北校区</Select.Option>,
+    <Select.Option key="珠海校区">珠海校区</Select.Option>,
 ];
 
 class TaskCreate extends Component {

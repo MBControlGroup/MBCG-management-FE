@@ -1,67 +1,111 @@
-import React, { Component } from 'react';
-import { Table, Progress, Badge } from 'antd';
+import React, {Component} from 'react';
+import {Table, Progress, Badge} from 'antd';
 
-const columns = [
-  {
-    title: '任务编号',
-    dataIndex: 'taskID',
-  },
-  {
-    title: '任务主题',
-    dataIndex: 'taskGoal',
-  },
-  {
-    title: '集合地点',
-    dataIndex: 'location',
-  },
-  {
-    title: '响应情况',
-    dataIndex: 'response',
-  },
-  {
-    title: '状态',
-    dataIndex: 'state',
-  },
-  {
-    title: '集合时间',
-    dataIndex: 'date',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    render: () => <a href="javascript:">详情</a>,
-  },
-];
-
-const data = [];
-for (let i = 0; i < 20; i++) {
-  data.push({
-    key: i,
-    taskID: `XX-${i}`,
-    taskGoal: '写代码',
-    location: '大学城',
-    response: <Progress percent={30} />,
-    state: <Badge dot status="processing" text="集合中" />,
-    date: '2018-5-12 13:51',
-    operation: '',
-  });
-}
-
-const pagination = {
-  total: 666,
-  showTotal: total => `总共 ${total} 个任务`,
+const url = 'http://private-3609bf-api497.apiary-mock.com';
+const header = {
+    'Content-Type': 'application/json',
+    method: 'POST',
 };
 
+const workingColumns = [
+    {
+        title: '任务编号',
+        dataIndex: 'task_id',
+    },
+    {
+        title: '任务主题',
+        dataIndex: 'title',
+    },
+    {
+        title: '集合地点',
+        dataIndex: 'gather_place',
+    },
+    {
+        title: '响应情况',
+        dataIndex: 'detail',
+    },
+    {
+        title: '状态',
+        dataIndex: 'status',
+    },
+    {
+        title: '集合时间',
+        dataIndex: 'gather_datetime',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        render: () => <a href="javascript:">详情</a>,
+    },
+];
+
+
 class TaskTable extends Component {
-  render() {
-    return (
-      <Table
-        columns={columns}
-        dataSource={data}
-        pagination={pagination}
-      />
-    );
-  }
+    constructor() {
+        super();
+        this.state = {
+            dataType: 'working',
+            data: [],
+            pagination: {
+                total: 0,
+                showTotal:
+                    total => `总共 ${total} 个任务`,
+            },
+        };
+
+    }
+
+    componentDidMount() {
+        this.getWorkingData();
+    }
+
+    getWorkingData() {
+        fetch(url + '/task/working/1/5', header).then((response) => {
+            return response.json();
+        }).then((responseData) => {
+            const fetchData = [];
+            responseData.data.forEach(function (element, index) {
+                var state = null;
+                switch (element.status) {
+                    case 'zj':
+                        state = <Badge dot status="processing" text="人员征集"/>;
+                        break;
+                    case 'jh':
+                        state = <Badge dot status="processing" text="集合中"/>;
+                        break;
+                    case 'zx':
+                        state = <Badge dot status="processing" text="已集合"/>;
+                        break;
+                }
+                fetchData.push({
+                    key: index,
+                    task_id: element.task_id,
+                    title: element.title,
+                    gather_place: element.gather_place,
+                    detail: <Progress percent={element.detail * 100}/>,
+                    status: <Badge dot status="processing" text="集合中"/>,
+                    gather_datetime: element.gather_datetime,
+                    operation: '',
+                });
+            });
+            this.setState({data: fetchData});
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
+    getDoneData() {
+    }
+
+    render() {
+        return (
+            <Table
+                columns={workingColumns}
+                dataSource={this.state.data}
+                pagination={this.state.pagination}
+            />
+        );
+    }
 }
 
 export default TaskTable;

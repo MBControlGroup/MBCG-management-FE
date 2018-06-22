@@ -1,12 +1,11 @@
 // @flow
 import React, {Component} from 'react';
-import styled from 'styled-components';
 import {Modal, Menu, Button} from 'antd';
+import styled from 'styled-components';
 
 import TaskTable from './component/TaskTable';
 import TaskCreate from './component/TaskCreate';
 import TaskIM from './component/TaskIM';
-
 
 import {observer, inject} from 'mobx-react';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
@@ -39,9 +38,8 @@ type PropType = {
     nav: stores.nav,
 }))
 
-// TODO:FIX login
-// @unLoginRedirect('/login')
-// @observer
+@unLoginRedirect('/login')
+@observer
 class Task extends Component<PropType> {
     state = {taskCreateVisible: false};
 

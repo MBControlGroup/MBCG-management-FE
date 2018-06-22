@@ -1,6 +1,6 @@
-import {ChatFeed, Message} from 'react-chat-ui';
 import React, {Component} from 'react';
 import {List, Avatar, Input, Button, Layout} from 'antd';
+import {ChatFeed, Message} from 'react-chat-ui';
 import styled from 'styled-components';
 
 const {Header, Footer, Sider, Content} = Layout;
