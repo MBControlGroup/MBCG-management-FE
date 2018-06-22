@@ -32,6 +32,12 @@ const MessageScreen = Loadable({
   loading: () => (<p>loading...</p>),
 });
 
+const TaskDetailScreen = Loadable({
+  loader: () => import('./container/TaskDetail/TaskDetail'),
+  loading: () => (<p>loading...</p>),
+});
+
+
 class AppRouter extends React.Component {
   constructor(props) {
     super();
@@ -44,6 +50,7 @@ class AppRouter extends React.Component {
           <Route exact path="/login" component={LoginScreen} />
           <BasicLayout>
             <Route exact path="/task" component={TaskScreen} />
+            <Route exact path="/task-detail/:id" component={TaskDetailScreen} />
             <Route exact path="/personnel" component={PersonnelScreen} />
             <Route exact path="/message" component={MessageScreen} />
           </BasicLayout>

@@ -38,19 +38,19 @@ export default class MessageFeedbackTable extends Component<Props> {
     const columns = [
       {
         title: '姓名',
-        dataIndex: 'Name',
+        dataIndex: 'name',
       },
       {
         title: '手机号码',
-        dataIndex: 'Phone_num',
+        dataIndex: 'phone_num',
       },
       {
         title: '级别',
-        dataIndex: 'Rank',
+        dataIndex: 'rank',
       },
       {
         title: '回复内容',
-        dataIndex: 'Rec_content',
+        dataIndex: 'rec_content',
       },
     ];
     if (isInitingOpenedMessage) {
@@ -59,10 +59,10 @@ export default class MessageFeedbackTable extends Component<Props> {
     return (
       <div>
         <Table
-          dataSource={currentOpenedMessage.Soldiers}
+          dataSource={currentOpenedMessage.soldiers}
           pagination={false}
           // bordered
-          rowKey={record => record.Soldier_id}
+          rowKey={record => record.soldier_id}
           columns={columns}
           // rowSelection={this.getRowSelection()}
         />

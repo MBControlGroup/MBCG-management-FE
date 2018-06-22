@@ -28,9 +28,13 @@ class User {
       password: user.password,
     };
     try {
-      await post('http://private-5648c6-signin13.apiary-mock.com/signin', postData);
+      await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/signin', postData);
       this.setUser(user);
-    } finally {
+    } catch(err) {
+      throw new Error(err);
+      console.log(err)
+    }
+    finally {
       this.loginIning = false;
     }
   }
@@ -44,7 +48,7 @@ class User {
   @action.bound
   async logout() {
     try {
-      await post('http://private-5648c6-signin13.apiary-mock.com/signout', {});
+      await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/signout', {});
       this.user = null;
       this.isLogin = false;
     } catch (err) {

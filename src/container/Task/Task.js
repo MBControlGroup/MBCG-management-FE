@@ -88,7 +88,6 @@ class Task extends Component<PropType> {
                     </Modal>
 
                     <TaskIM/>
-
                 </div>
             </Container>
         );
