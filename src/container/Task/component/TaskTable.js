@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Table, Progress, Badge} from 'antd';
+import history from '../../../component/History';
 
 const url = 'http://private-3609bf-api497.apiary-mock.com';
 const header = {
@@ -35,11 +36,17 @@ const workingColumns = [
     {
         title: '操作',
         dataIndex: 'operation',
-        render: () => <a href="javascript:">详情</a>,
+        render: (text, record) => <a
+            href="javascript:"
+            onClick={() => this.handleClick(record.taskID)}
+        >详情</a>,
     },
 ];
 
-
+@inject(stores => ({
+    task: stores.task,
+}))
+@observer
 class TaskTable extends Component {
     constructor() {
         super();
@@ -95,6 +102,12 @@ class TaskTable extends Component {
     }
 
     getDoneData() {
+    }
+
+    handleClick(id) {
+        console.log(id);
+        this.props.task.setTaskID(id);
+        history.push(`/task-detail/${id}`);
     }
 
     render() {

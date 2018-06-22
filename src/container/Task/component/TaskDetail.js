@@ -6,8 +6,8 @@ import { Map, Marker } from 'react-amap';
 import { Table } from 'antd';
 
 
-import unLoginRedirect from '../../component/hoc/unlogin-redirect';
-import history from '../../component/History';
+import unLoginRedirect from '../../../component/hoc/unlogin-redirect';
+import history from '../../../component/History';
 
 const Menu = styled.div`
     width: 100%;
