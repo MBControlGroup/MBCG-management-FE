@@ -41,11 +41,28 @@ type PropType = {
 @unLoginRedirect('/login')
 @observer
 class Task extends Component<PropType> {
-    state = {taskCreateVisible: false};
+    constructor() {
+        super();
+        this.state = {
+            taskCreateVisible: false,
+            currentSelect: 'working',
+        };
+    }
 
     componentWillMount() {
         this.props.nav.setSelectedKey('nav_1');
     }
+
+    handleMenuClick = (item) => {
+        switch (item.key) {
+            case "1":
+                this.setState({currentSelect: 'working'});
+                break;
+            case "2":
+                this.setState({currentSelect: 'done'});
+                break;
+        }
+    };
 
     showTaskCreate = () => {
         this.setState({
@@ -68,12 +85,12 @@ class Task extends Component<PropType> {
                     </TaskButton>
                 </div>
                 <div>
-                    <MenuStyled mode="horizontal">
+                    <MenuStyled mode="horizontal" onClick={this.handleMenuClick}>
                         <Menu.Item key="1">正在进行</Menu.Item>
                         <Menu.Item key="2">已完成</Menu.Item>
                     </MenuStyled>
 
-                    <TaskTable/>
+                    <TaskTable type={this.state.currentSelect}/>
 
                     <Modal
                         title="发布任务"

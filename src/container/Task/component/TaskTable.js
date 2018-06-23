@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Table, Progress, Badge} from 'antd';
+import {observer, inject} from 'mobx-react';
 import history from '../../../component/History';
 
 const url = 'http://private-3609bf-api497.apiary-mock.com';
@@ -43,15 +44,50 @@ const workingColumns = [
     },
 ];
 
+const doneColumns = [
+    {
+        title: '任务编号',
+        dataIndex: 'task_id',
+    },
+    {
+        title: '任务主题',
+        dataIndex: 'title',
+    },
+    {
+        title: '集合地点',
+        dataIndex: 'gather_place',
+    },
+    {
+        title: '开始时间',
+        dataIndex: 'launch_datetime',
+    },
+    {
+        title: '结束时间',
+        dataIndex: 'finish_datetime',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+        render: (text, record) => <a
+            href="javascript:"
+            onClick={() => this.handleClick(record.taskID)}
+        >详情</a>,
+    },
+];
+
+type PropType = {
+    type: string,
+}
+
 @inject(stores => ({
     task: stores.task,
 }))
 @observer
-class TaskTable extends Component {
+class TaskTable extends Component<PropType> {
     constructor() {
         super();
         this.state = {
-            dataType: 'working',
+            columns: workingColumns,
             data: [],
             pagination: {
                 total: 0,
@@ -59,7 +95,19 @@ class TaskTable extends Component {
                     total => `总共 ${total} 个任务`,
             },
         };
+    }
 
+    componentWillReceiveProps(props) {
+        switch (props.type) {
+            case "working":
+                this.setState({columns: workingColumns});
+                this.getWorkingData();
+                break;
+            case "done":
+                this.setState({columns: doneColumns});
+                this.getDoneData();
+                break;
+        }
     }
 
     componentDidMount() {
@@ -96,12 +144,37 @@ class TaskTable extends Component {
                 });
             });
             this.setState({data: fetchData});
+            var pagination = this.state.pagination;
+            pagination.total = responseData.total_tasks;
+            this.setState({pagination: pagination});
         }).catch((error) => {
             console.log(error);
         });
     }
 
     getDoneData() {
+        fetch(url + '/task/done/1/5', header).then((response) => {
+            return response.json();
+        }).then((responseData) => {
+            const fetchData = [];
+            responseData.data.forEach(function (element, index) {
+                fetchData.push({
+                    key: index,
+                    task_id: element.task_id,
+                    title: element.title,
+                    gather_place: element.gather_place,
+                    launch_datetime: element.launch_datetime,
+                    finish_datetime: element.finish_datetime,
+                    operation: '',
+                });
+            });
+            this.setState({data: fetchData});
+            var pagination = this.state.pagination;
+            pagination.total = responseData.total_tasks;
+            this.setState({pagination: pagination});
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     handleClick(id) {
@@ -113,7 +186,7 @@ class TaskTable extends Component {
     render() {
         return (
             <Table
-                columns={workingColumns}
+                columns={this.state.columns}
                 dataSource={this.state.data}
                 pagination={this.state.pagination}
             />
