@@ -85,7 +85,7 @@ class Task extends Component<PropType> {
                     </TaskButton>
                 </div>
                 <div>
-                    <MenuStyled mode="horizontal" onClick={this.handleMenuClick}>
+                    <MenuStyled mode="horizontal" defaultSelectedKeys={["1"]} onClick={this.handleMenuClick}>
                         <Menu.Item key="1">正在进行</Menu.Item>
                         <Menu.Item key="2">已完成</Menu.Item>
                     </MenuStyled>

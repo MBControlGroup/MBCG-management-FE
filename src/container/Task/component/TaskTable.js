@@ -95,6 +95,8 @@ class TaskTable extends Component<PropType> {
                     total => `总共 ${total} 个任务`,
             },
         };
+
+        this.getWorkingData();
     }
 
     componentWillReceiveProps(props) {
@@ -110,17 +112,13 @@ class TaskTable extends Component<PropType> {
         }
     }
 
-    componentDidMount() {
-        this.getWorkingData();
-    }
-
     getWorkingData() {
         fetch(url + '/task/working/1/5', header).then((response) => {
             return response.json();
         }).then((responseData) => {
             const fetchData = [];
             responseData.data.forEach(function (element, index) {
-                var state = null;
+                let state = null;
                 switch (element.status) {
                     case 'zj':
                         state = <Badge dot status="processing" text="人员征集"/>;
@@ -144,7 +142,7 @@ class TaskTable extends Component<PropType> {
                 });
             });
             this.setState({data: fetchData});
-            var pagination = this.state.pagination;
+            let pagination = this.state.pagination;
             pagination.total = responseData.total_tasks;
             this.setState({pagination: pagination});
         }).catch((error) => {
@@ -169,7 +167,7 @@ class TaskTable extends Component<PropType> {
                 });
             });
             this.setState({data: fetchData});
-            var pagination = this.state.pagination;
+            let pagination = this.state.pagination;
             pagination.total = responseData.total_tasks;
             this.setState({pagination: pagination});
         }).catch((error) => {
