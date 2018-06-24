@@ -64,13 +64,8 @@ class Task extends Component<PropType> {
         }
     };
 
-    showTaskCreate = () => {
-        this.setState({
-            taskCreateVisible: true,
-        });
-    };
-
-    hideTaskCreate = () => {
+    taskCreateOK = () => {
+        this.taskCreate.sendData();
         this.setState({
             taskCreateVisible: false,
         });
@@ -80,7 +75,11 @@ class Task extends Component<PropType> {
         return (
             <Container>
                 <div>
-                    <TaskButton type="primary" onClick={this.showTaskCreate}>
+                    <TaskButton type="primary" onClick={() => {
+                        this.setState({
+                            taskCreateVisible: true,
+                        });
+                    }}>
                         +发布任务
                     </TaskButton>
                 </div>
@@ -97,11 +96,17 @@ class Task extends Component<PropType> {
                         width={960}
                         visible={this.state.taskCreateVisible}
                         okText="发布"
-                        onOk={this.hideTaskCreate}
+                        onOk={this.taskCreateOK}
                         cancelText="取消"
-                        onCancel={this.hideTaskCreate}
+                        onCancel={() => {
+                            this.setState({
+                                taskCreateVisible: false,
+                            });
+                        }}
                     >
-                        <TaskCreate/>
+                        <TaskCreate ref={instance => {
+                            this.taskCreate = instance;
+                        }}/>
                     </Modal>
 
                     <TaskIM/>
