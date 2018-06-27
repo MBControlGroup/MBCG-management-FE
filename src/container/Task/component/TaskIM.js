@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {List, Avatar, Input, Button, Layout} from 'antd';
+import {List, Avatar, Input, Button, Layout, Modal} from 'antd';
 import {ChatFeed, Message} from 'react-chat-ui';
 import styled from 'styled-components';
 
@@ -10,11 +10,6 @@ const Container = styled.div`
   background-color: #FFF;
   margin-top: 20px;
   padding: 20px;
-`;
-
-const MessageButton = styled(Button)`
-  float: right;
-  margin-top: 10px;
 `;
 
 const contactData = [
@@ -85,27 +80,33 @@ class MessageWindow extends Component {
                 </Content>
                 <Footer style={{background: '#fff'}}>
                     <TextArea autosize={{minRows: 2, maxRows: 6}}/>
-                    <MessageButton>发送</MessageButton>
                 </Footer>
             </Layout>
         );
     }
 }
 
-const borderStyle = {
-    background: '#fff',
-    'border-style': 'solid',
-    'border-color': 'lightgray',
-    'border-width': '1px',
-};
-
 class TaskIM extends Component {
+    constructor() {
+        super();
+    }
+
     render() {
         return (
-            <Layout>
-                <Sider style={borderStyle}><ContactList/></Sider>
-                <Content style={borderStyle}><MessageWindow/></Content>
-            </Layout>
+            <Modal
+                title="即时通讯"
+                width={960}
+                visible={this.props.visible}
+                okText="发送"
+                cancelText="关闭"
+                onCancel={this.props.closeWindow}
+            >
+                <Layout>
+                    <Sider style={{background: '#fff'}}><ContactList/></Sider>
+                    <Content><MessageWindow/></Content>
+                </Layout>
+            </Modal>
+
         );
     }
 }

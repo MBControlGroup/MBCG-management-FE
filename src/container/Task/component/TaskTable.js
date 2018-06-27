@@ -4,9 +4,12 @@ import {observer, inject} from 'mobx-react';
 import history from '../../../component/History';
 
 const url = 'http://private-3609bf-api497.apiary-mock.com';
-const header = {
-    'Content-Type': 'application/json',
+const parameter = {
     method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
 };
 
 const workingColumns = [
@@ -113,7 +116,7 @@ class TaskTable extends Component<PropType> {
     }
 
     getWorkingData() {
-        fetch(url + '/task/working/1/5', header).then((response) => {
+        fetch(url + '/task/working/1/5', parameter).then((response) => {
             return response.json();
         }).then((responseData) => {
             const fetchData = [];
@@ -151,7 +154,7 @@ class TaskTable extends Component<PropType> {
     }
 
     getDoneData() {
-        fetch(url + '/task/done/1/5', header).then((response) => {
+        fetch(url + '/task/done/1/5', parameter).then((response) => {
             return response.json();
         }).then((responseData) => {
             const fetchData = [];

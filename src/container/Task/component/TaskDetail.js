@@ -3,8 +3,9 @@ import React, {Component} from 'react';
 import {observer, inject} from 'mobx-react';
 import styled from 'styled-components';
 import {Map, Marker} from 'react-amap';
-import {Table} from 'antd';
+import {Table, Button} from 'antd';
 
+import TaskIM from './TaskIM'
 
 import unLoginRedirect from '../../../component/hoc/unlogin-redirect';
 import history from '../../../component/History';
@@ -109,11 +110,16 @@ const TableCell = styled.span`
     isLogin: stores.user.isLogin,
     task: stores.task,
 }))
+
 @unLoginRedirect('/login')
 @observer
 class TaskDetail extends Component {
-    state = {
-        time: new Date(),
+    constructor() {
+        super();
+        this.state = {
+            time: new Date(),
+            showIMWindow: false,
+        };
     }
 
     componentWillMount() {
@@ -136,7 +142,7 @@ class TaskDetail extends Component {
             color: '#000',
             textAlign: 'center',
             lineHeight: '40px'
-        }
+        };
         const styleAC = {
             background: `url('http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/map-marker-icon.png')`,
             backgroundSize: 'contain',
@@ -147,12 +153,12 @@ class TaskDetail extends Component {
             color: '#000',
             textAlign: 'center',
             lineHeight: '60px'
-        }
+        };
         const events = {
             click: (e) => {
                 this.props.task.setSoldierID(e.target.Pg.extData.id)
             },
-        }
+        };
 
         const columns = [{
             title: 'id号码',
@@ -197,7 +203,13 @@ class TaskDetail extends Component {
                 </Header>
                 <Section>
                     <SectionHeader>
-                        <h3>任务实时情况</h3>
+                        <h3>
+                            任务实时情况
+                            <Button style={{float: 'right'}} onClick={() => {
+                                this.setState({showIMWindow: true});
+                            }}>即时通讯</Button>
+                        </h3>
+
                     </SectionHeader>
                     <SectionBody>
                         <Section1LC>
@@ -283,6 +295,9 @@ class TaskDetail extends Component {
                         </Section1RC>
                     </SectionBody>
                 </Section>
+                <TaskIM visible={this.state.showIMWindow} closeWindow={() => {
+                    this.setState({showIMWindow: false});
+                }}/>
             </div>
         );
     }

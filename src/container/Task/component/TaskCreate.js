@@ -6,9 +6,12 @@ import styled from 'styled-components';
 const Option = Select.Option;
 
 const url = 'http://private-3609bf-api497.apiary-mock.com';
-const header = {
-    'Content-Type': 'application/json',
+const parameter = {
     method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
 };
 
 const Container = styled.div`
@@ -61,7 +64,7 @@ class TaskCreate extends Component {
     }
 
     fetchDataNeeded = () => {
-        fetch(url + '/task/info', header).then((response) => {
+        fetch(url + '/task/info', parameter).then((response) => {
             return response.json();
         }).then((responseData) => {
             let options = [];
@@ -74,7 +77,7 @@ class TaskCreate extends Component {
             console.log(error);
         });
 
-        fetch(url + '/task/orgs', header).then((response) => {
+        fetch(url + '/task/orgs', parameter).then((response) => {
             return response.json();
         }).then((responseData) => {
             let options = [];
@@ -87,7 +90,7 @@ class TaskCreate extends Component {
             console.log(error);
         });
 
-        fetch(url + '/task/offices', header).then((response) => {
+        fetch(url + '/task/offices', parameter).then((response) => {
             return response.json();
         }).then((responseData) => {
             let options = [];
@@ -130,7 +133,7 @@ class TaskCreate extends Component {
             place_lng: this.state.position.longitude,
         };
 
-        fetch(url + '/task', header).catch((error) => {
+        fetch(url + '/task', parameter).catch((error) => {
             console.log(error);
         });
     };
