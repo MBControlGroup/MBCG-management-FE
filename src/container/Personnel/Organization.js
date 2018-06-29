@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Tree, Icon, Input, Button, Modal, Table, Popconfirm, Upload, message } from 'antd';
 import styled from 'styled-components'
+
+import * as XLSX from 'xlsx';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
+import { observer, inject } from 'mobx-react';
+
 
 const TreeNode = Tree.TreeNode;
 const Search = Input.Search;
@@ -15,39 +19,29 @@ const RowInput = styled.div`
   align-items: right;
   margin-bottom: 20px;
 `;
-// 批量导入
-const files = {
-  name: 'file',
-  ListType: 'excel',
-  action: '//jsonplaceholder.typicode.com/posts/',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
 
 type PropType = {
-  // areaData: Array
-};
-
+  isLogin: boolean,
+  nav: Object,
+  personnel: Object
+}
 @inject(stores => ({
   isLogin: stores.user.isLogin,
   nav: stores.nav,
+  personnel: stores.personnel
 }))
 @unLoginRedirect('/login')
 @observer
-class Organization extends React.Component {
-  constructor() {
-    super();
+class Organization extends React.Component<PropType> {
+  constructor(props: PropType) {
+    super(props);
+    try {
+      this.props.personnel.getOrgs();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log("finished");
+    }
   }
   state = {
     addOrgModalVisible: false,
@@ -62,23 +56,29 @@ class Organization extends React.Component {
     orgLeaderPhone: '',
     personName: '',
     personPhone: '',
+    personIdentity: '',
     personPosition: '',
     personUnit:'',
-    personAddress: '',
-    personReserveContact:'',
-    personResConPhone: ''
+    // personcommander_id: '',
   }
 
   componentWillMount() {
     this.props.nav.setSelectedKey('nav_4');
     this.state.areaData.push(
     {
-      key: '0', title: '广州市', leaderName: 'test', leaderPhone: '123456', children: [],
-      soilders: [
-        { key: 0, name: 'test1', phone: '123', position: '民兵', unit: '广州番禺部门',
-          address: '广州番禺', reserveContact: 'xxx', reserveContactPhone:'123456' },
-        { key: 1, name: 'test2', phone: '234', position: '民兵', unit: '广州海珠部门',
-        address: '广州海珠', reserveContact: 'xxx', reserveContactPhone:'123456' }
+      key: '0', isOrg: false, title: '广州市', leaderName: 'test', leaderPhone: '13719323393', children: [
+        {key: '0-0', isOrg: false, title: '越秀区', leaderName: 'test', leaderPhone: '13719323393', children: [
+          {key: '0-0-0', isOrg: false, title: '东山街道', leaderName: 'test', leaderPhone: '13719323393', children: [],soldiers: []},
+          {key: '0-0-1', isOrg: false, title: '白云街道', leaderName: 'test', leaderPhone: '13719323393', children: [],soldiers: []},
+        ],soldiers: []},
+        {key: '0-1', isOrg: false, title: '海珠区', leaderName: 'test', leaderPhone: '13719323393', children: [
+          {key: '0-1-0', isOrg: false, title: '琶洲街道', leaderName: 'test', leaderPhone: '13719323393', children: [],soldiers: []},
+          {key: '0-1-1', isOrg: false, title: '官洲街道', leaderName: 'test', leaderPhone: '13719323393', children: [],soldiers: []},
+        ],soldiers: []}
+      ],
+      soldiers: [
+        { soldier_id: 0, name: '张大', phone: '13719323393', identity:'440582000000000000', position: 'MB', unit: '广州'},
+        { soldier_id: 1, name: '张二', phone: '13719323393', identity:'440582000000000001', position: 'MB', unit: '广州'}
       ]
     })
     this.setState( {
@@ -88,40 +88,86 @@ class Organization extends React.Component {
         sorter: (a, b) => this.compareByAlph(a.name, b.name) },
         {title: '手机号码', dataIndex: 'phone', key: 'phone',
         sorter: (a, b) => this.compareByAlph(a.phone, b.phone)},
-        {title: '职务', dataIndex: 'position', key:'position'},
+        {title: '身份证', dataIndex: 'identity', key: 'identity',
+        sorter: (a, b) => this.compareByAlph(a.identity, b.identity)},
+        {title: '职务', dataIndex: 'position', key:'position',
+        sorter: (a, b) => this.compareByAlph(a.position, b.position)},
         {title: '单位', dataIndex: 'unit', key: 'unit'},
-        {title: '家庭住址', dataIndex: 'address', key: 'address',
-        sorter: (a, b) => this.compareByAlph(a.phone, b.phone)},
-        {title: '备用联系人', dataIndex: 'reserveContact', key: 'reserveContact'},
-        {title: '备用联系号码', dataIndex: 'reserveContactPhone', key: 'reserveContactPhone'},
+        // {title: '指挥官id', dataIndex: 'commander_id', key: 'commander_id'},
         {
           title: '操作',
           dataIndex: 'operation',
           render: (text, record) => {
             return (
-              // this.state.curNode.soilders.length > 1 ?
+              // this.state.curNode.soldiers.length > 1 ?
               (
-                <Popconfirm title="Sure to delete?" onConfirm={() => this.onDelete(record.key)}>
+                <Popconfirm title="Sure to delete?" onConfirm={() => this.onDelete(record.soldier_id)}>
                   <a href="javascript:;">Delete</a>
                 </Popconfirm>
               )
-              // :null
             );
           },
         }
       ]
     })
   }
-  compareByAlph = (a, b) => { 
-    if (a > b) { return 1; } 
-    if (a < b) { return -1; } 
-    return 0; 
+  // 批量导入人员信息
+  uploadFile = (e) => {
+    var files = e.target.files;
+    let source = [...this.state.areaData];
+    let temp = this.findCurNode(source);
+    var fileReader = new FileReader();
+    var that = this;
+    fileReader.onload = function(ev) {
+        try {
+            var data = ev.target.result;
+            var workbook = XLSX.read(data, {
+                    type: 'binary'
+            }); // 以二进制流方式读取得到整份excel表格对象
+            var persons = []; // 存储获取到的数据
+        } catch (e) {
+            console.log('文件类型不正确');
+            return;
+        }
+        // 表格的表格范围，可用于判断表头是否数量是否正确
+        var fromTo = '';
+        // 遍历每张表读取
+        for (var sheet in workbook.Sheets) {
+            if (workbook.Sheets.hasOwnProperty(sheet)) {
+                fromTo = workbook.Sheets[sheet]['!ref'];
+                console.log(fromTo);
+                persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
+                // break; // 如果只取第一张表，就取消注释这行
+            }
+        }
+        console.log(persons);
+        let len = 0;
+        if (temp.soldiers != null) len = temp.soldiers.length
+        for (var i = 0; i < persons.length; ++i) {
+          persons[i].soldier_id = len;
+          temp.soldiers.push(persons[i]);
+          len = len + 1
+        }
+        that.setState({
+          areaData: source
+        })
+        message.success("upload file success");
+    };
+
+    // 以二进制方式打开文件
+    fileReader.readAsBinaryString(files[0]);
+  }
+
+  compareByAlph = (a, b) => {
+    if (a > b) return 1;
+    if (a < b) return -1;
+    return 0;
   }
   onDelete = (key) => {
     console.log('here');
     let source = [...this.state.areaData];
     let temp = this.findCurNode(source);
-    temp.soilders = temp.soilders.filter(item => item.key !== key)
+    temp.soldiers = temp.soldiers.filter(item => item.soldier_id !== key)
     this.setState({
       areaData: source
     })
@@ -148,6 +194,18 @@ class Organization extends React.Component {
     this.setModifyOrgModal(false);
     this.setAddPersonModal(false);
   }
+  // 可以删除，console.log是正确的，但是显示并没有更新，待解决，可能需要用数据库，删除后直接刷新
+  deleteOrg = () => {
+    let source = [...this.state.areaData];
+    console.log(this.state.curSelectedKey);
+    source = source.filter(item => item.key !== this.state.curSelectedKey)
+    this.setState({
+      areaData: source,
+      curSelectedKey: '0'
+    })
+    message.success('delete organization successfully');
+    this.setModifyOrgModal(false);
+  }
   // 根据当前选中节点的key寻找当前选中的节点
   findCurNode = (data) => {
     let temp = null;
@@ -168,30 +226,60 @@ class Organization extends React.Component {
     let temp = this.findCurNode(this.state.areaData);
     console.log(this.state.areaData);
     if (temp == null) {
-      alert('please choose one level');
+      message.error('please choose one level');
+      this.setAddOrgModal(false);
+      return;
+    }
+    if (this.state.orgName === '' || this.state.orgLeader === '' || this.state.orgLeaderPhone === '') {
+      message.error("请填写完整信息");
+      return;
+    }
+
+    var regex = /^((\+)?86|((\+)?86)?)0?1[3458]\d{9}$/;
+    if (!regex.test(this.state.orgLeaderPhone)) {
+      this.setState({
+        orgLeaderPhone: ''
+      })
+      message.error('phone length should be 11(0-9)');
       return;
     }
     temp.children = temp.children || [];
     let len = temp.children.length;
 
     if (len != 0) {
-      temp.children.push({key: temp.key+'-'+len, title: this.state.orgName, 
+      temp.children.push({key: temp.key+'-'+len, isOrg: true, title: this.state.orgName, 
       leaderName: this.state.orgLeader, leaderPhone: this.state.orgLeaderPhone, children: [],
-      soilders: []
+      soldiers: []
     })
     } else {
-      temp.children.push({key:temp.key+'-'+'0', title: this.state.orgName, 
+      temp.children.push({key:temp.key+'-'+'0', isOrg: true, title: this.state.orgName, 
       leaderName: this.state.orgLeader, leaderPhone: this.state.orgLeaderPhone,children: [],
-      soilders: []
+      soldiers: []
     })
     }
+    // this.setState({
+    //   orgName: '',
+    //   orgLeader: '',
+    //   orgLeaderPhone: ''
+    // })
     this.setAddOrgModal(false);
   }
   // 修改组织信息
   modifyOrg = ()=> {
     let temp = this.findCurNode(this.state.areaData);
     if (temp == null) {
-      alert('please choose one level');
+      message.error('please choose one level');
+      this.setModifyOrgModal(false);
+      return;
+    }
+    if (temp.isOrg == false) {
+      message.error('不能修改单位信息');
+      return;
+    }
+    var regex = /^((\+)?86|((\+)?86)?)0?1[3458]\d{9}$/;
+    if (!regex.test(this.state.orgLeaderPhone)) {
+      message.error(this.state.orgLeaderPhone);
+      message.error('请输入11位手机号,只包含数字');
       return;
     }
     temp.title = this.state.orgName;
@@ -201,18 +289,44 @@ class Organization extends React.Component {
   }
   // 添加人员
   addPerson = ()=> {
+    if (this.state.personName === '' || this.state.personPhone === '' ||
+        this.state.personIdentity === ''
+      || this.state.personPosition === '' || this.state.personUnit === '') {
+      message.error('请填写完整信息')
+      return;
+    }
     let temp = this.findCurNode(this.state.areaData);
     if (temp == null) {
-      alert('please choose one level');
+      message.error('please choose one level');
+      this.setAddPersonModal(false);
+      return;
+    }
+    var idReg = /^\d{17}(\d|x)$/;
+    if ( !idReg.test(this.state.personIdentity)) {
+      message.error('请输入18位身份证号码,只包含数字');
+      this.setState({
+        personIdentity: ''
+      })
+      return;
+    }
+    var phoneReg = /^((\+)?86|((\+)?86)?)0?1[3458]\d{9}$/;
+    if (!phoneReg.test(this.state.personPhone)) {
+      message.error('请输入11位手机号,只包含数字');
+      this.setState({
+        personPhone: ''
+      })
       return;
     }
     let len = 0;
-    if (temp.soilders != null) len = temp.soilders.length
-    temp.soilders.push({
-      key: len, name: this.state.personName, phone: this.state.personPhone, 
+    if (temp.soldiers != null) len = temp.soldiers.length
+    temp.soldiers.push({
+      soldier_id: len, name: this.state.personName, phone: this.state.personPhone, 
+      identity: this.state.personIdentity,
       position: this.state.personPosition, unit: this.state.personUnit,
-      address: this.state.personAddress, reserveContact: this.state.personReserveContact,
-      reserveContactPhone: this.state.personResConPhone
+    })
+    this.setState({
+      personName: '', personPhone: '', personIdentity: '',
+      personPosition: '', personUnit: ''
     })
     this.setAddPersonModal(false);
   }
@@ -221,7 +335,10 @@ class Organization extends React.Component {
     this.setState({
       curSelectedKey: selectedKeys
     })
-    this.state.curNode = this.findCurNode(selectedKeys)
+    this.setState({
+      curNode: this.findCurNode(this.state.areaData)
+    })
+    // this.state.curNode = this.findCurNode(this.state.areaData);
     console.log('selected', selectedKeys,info);
   }
   onCheck = (checkedKeys, info) => {
@@ -231,7 +348,7 @@ class Organization extends React.Component {
     return areaData.map((item) => {
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item}>
+          <TreeNode title={item.isOrg ?  item.title : <span style={{ fontWeight:"bold" }}>{item.title}</span>} key={item.key} dataRef={item}>
             {this.loop(item.children)}
           </TreeNode>
         );
@@ -264,6 +381,11 @@ class Organization extends React.Component {
       personPhone: event.target.value
     })
   }
+  getPersonIdentity = (event) => {
+    this.setState({
+      personIdentity: event.target.value
+    })
+  }
   getPersonPosition = (event) => {
     this.setState({
       personPosition: event.target.value
@@ -274,42 +396,31 @@ class Organization extends React.Component {
       personUnit: event.target.value
     })
   }
-  getPersonAddress = (event) => {
-    this.setState({
-      personAddress: event.target.value
-    })
-  }
-  getReserveContact = (event) => {
-    this.setState({
-      personReserveContact: event.target.value
-    })
-  }
-  getReserveContactPhone = (event) => {
-    this.setState({
-      personResConPhone: event.target.value
-    })
-  }
+  // getPersoncommander_id = (event) => {
+  //   this.setState({
+  //     personcommander_id: event.target.value
+  //   })
+  // }
   render() {
     let cur = this.findCurNode(this.state.areaData);
     return (
       <Container>
       <Button style={{  width: '10%', marginTop: 10, marginRight: '5%'}} type='primary' 
               onClick = {()=>this.setAddOrgModal(true)}
-      >添加单位</Button>
+      >添加组织</Button>
       <Button style={{ width: '10%', marginTop: 10, marginRight: '25%'}} type='primary'
               onClick = {()=>this.setModifyOrgModal(true)}
-      >修改单位信息</Button>
+      >修改组织信息</Button>
       <Button style={{ width: '10%', marginTop: 10, marginRight: '5%'}} type='primary'
               onClick = {()=>this.setAddPersonModal(true)}
       >添加人员</Button>
-      <Upload {...files} accept='file' >
-            <Button type='primary' style={{ margin: '0 5px'}} >
-              <Icon type='upload' />批量导入
-            </Button>
-      </Upload>
 
-      <div style={{float: 'left', width: '25%',marginRight: 30, marginTop:20, backgroundColor:'white' }}>
+      <input type="file" onChange={this.uploadFile} 
+      accept=".xlsx, .xls" />
+
+      <div style={{overflow: 'hidden', float: 'left', width: '17%',marginRight: 30, marginTop:20, backgroundColor:'white' }}>
         <Tree
+          defaultExpandAll
           showLine
           defaultSelectedKeys={ this.state.selectedKeys }
           onSelect={this.onSelect}
@@ -320,9 +431,9 @@ class Organization extends React.Component {
       </div>
       {/* 对应节点的表格显示 */}
       <Table
-        dataSource={ cur.soilders }
+        dataSource={ cur.soldiers }
         columns={ this.state.columns}
-        style={{ float: 'left', width: '70%', marginTop: 20 }}
+        style={{ float: 'left', width: '80%', marginTop: 20 }}
       >
       </Table>
 
@@ -395,6 +506,11 @@ class Organization extends React.Component {
             />
           </RowInput>
           <RowInput>
+            <span>身份证　</span><Input defaultValue={this.state.personIdentity} type='text' placeholder='请输入' style={{width:'380px'}}
+            onChange={this.getPersonIdentity}
+            />
+          </RowInput>
+          <RowInput>
             <span>职务　</span><Input defaultValue={this.state.personPosition} type='text' placeholder='请输入' style={{width:'380px'}}
             onChange={this.getPersonPosition}
             />
@@ -404,20 +520,11 @@ class Organization extends React.Component {
             onChange={this.getPersonUnit}
             />
           </RowInput>
-          <RowInput>
-            <span>家庭住址　</span><Input defaultValue={this.state.personAddress} type='text' placeholder='请输入' style={{width:'380px'}}
-            onChange={this.getPersonAddress}
+          {/* <RowInput>
+            <span>指挥官id　</span><Input defaultValue={this.state.personcommander_id} type='text' placeholder='请输入' style={{width:'380px'}}
+            onChange={this.getPersoncommander_id}
             />
-          </RowInput>
-          <RowInput>
-            <span>备用联系人　</span><Input defaultValue={this.state.personReserveContact} type='text' placeholder='请输入' style={{width:'380px'}}
-            onChange={this.getReserveContact}
-            />
-          </RowInput><RowInput>
-            <span>备用联系方式　</span><Input defaultValue={this.state.personResConPhone} type='text' placeholder='请输入' style={{width:'380px'}}
-            onChange={this.getReserveContactPhone}
-            />
-          </RowInput>
+          </RowInput> */}
       </Modal>
       </Container>
     );

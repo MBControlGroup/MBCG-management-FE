@@ -2,12 +2,14 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { observer, inject } from 'mobx-react';
-import { Button, Input, Modal, Icon, Upload, message } from 'antd';
+import { Button, message, Tree } from 'antd';
 
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
 import PersonnelAreaQuery from './component/Personnel-area-query';
 import PersonnelQueryForm from './component/Personnel-query-form';
 import PersonnelTable from './component/Personnel-table';
+
+const TreeNode = Tree.TreeNode;
 
 // 样式模块，直接用css书写
 const Container = styled.div`
@@ -17,107 +19,59 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-const Data = styled.div`
-  margin-top: -10px;
-  float: right;
-`;
-
-// 水平垂直居中
-const RowInput = styled.div`
-  display:flex;
-  justify-content:space-between;
-  align-items: right;
-  margin-bottom: 20px;
-`;
-
-const files = {
-  name: 'file',
-  ListType: 'text',
-  action: '//jsonplaceholder.typicode.com/posts/',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-
 type PropType = {
   isLogin: boolean,
-  nav: Object
+  nav: Object,
+  personnel: Object
 }
 
 @inject(stores => ({
   isLogin: stores.user.isLogin,
-  nav: stores.nav
+  nav: stores.nav,
+  personnel: stores.personnel
 }))
 @unLoginRedirect('/login')
 @observer
 class Personnel extends Component<PropType> {
+  constructor(props: PropType) {
+    super(props);
+    try {
+      this.props.personnel.getOrgs();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log("finished");
+    }
+  }
   componentWillMount() {
     this.props.nav.setSelectedKey('nav_2');
   }
-
-  state = {
-    modal1Visible: false,
-    modal2Visible: false
+  loop = (areaData) => {
+    return areaData.map((item) => {
+      if (item.children) {
+        return (
+          <TreeNode title={item.flag ? <span style={{ color: '#009922' }}>{item.title}</span> : item.title} key={item.key} dataRef={item}>
+            {this.loop(item.children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode {...item} />;
+    });
   }
-
-  setModal1Visible(modal1Visible) {
-    this.setState({modal1Visible});
-  }
-  setModal2Visible(modal2Visible) {
-    this.setState({modal2Visible});
-  }
-
   render() {
+    const { selectedAreaKey, areaData } = this.props.personnel;
+    console.log(areaData);
     return (
       <Container>
-        <Data>
-          <Button type='primary' style={{ margin: '0 5px'}} 
-          onClick={()=>this.setModal1Visible(true)}>新增</Button>
-          <Button type='ghost' style={{ margin: '0 5px' }}>
-            <Icon type='download' />批量导出
-          </Button>
-          <Upload {...files}>
-            <Button type='ghost' style={{ margin: '0 5px'}} >
-              <Icon type='upload' />批量导入
-            </Button>
-          </Upload>    
-        </Data>
-        <span>区域　</span>
-        <PersonnelAreaQuery />
-        <PersonnelQueryForm />
-
-        <PersonnelTable />
-
-        <Modal
-          title='新建人员'
-          visible={this.state.modal1Visible}
-          onOk={()=>this.setModal1Visible(false)}
-          onCancel={()=>this.setModal1Visible(false)}
+        <Tree
+          defaultExpandAll
+          showLine
+          defaultSelectedKeys={["0"]}
+          onSelect={this.onSelect}
+          onCheck={this.onCheck}
         >
-          <RowInput>
-            <span>姓名　</span><Input type='text' placeholder='请输入' style={{width:'380px'}}/>
-          </RowInput>
-          <RowInput>
-            <span>手机号码　</span><Input type='text' placeholder='请输入' style={{width:'380px'}}/>
-          </RowInput>
-          <RowInput>
-            <span>身份证号码　</span><Input type='text' placeholder='请输入' style={{width:'380px'}}/>
-          </RowInput>
-          <RowInput>
-            <span>所属分支　</span><PersonnelAreaQuery />
-          </RowInput>
-        </Modal>
-      
+          {this.loop(areaData)}
+        </Tree>
       </Container>
     );
   }
