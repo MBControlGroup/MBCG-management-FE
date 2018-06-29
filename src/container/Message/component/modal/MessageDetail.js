@@ -26,19 +26,20 @@ const MessageDetail = ({ message }) => (
       <p><Bold>消息标题:</Bold>{message.currentOpenedMessage.data.title}</p>
       <p><Bold>消息详情:</Bold>{message.currentOpenedMessage.data.detail}</p>
       <p><Bold>消息类型:</Bold>{message.currentOpenedMessage.data.bm_type}</p>
-      <p><Bold>发送方式:</Bold>{message.currentOpenedMessage.data.send_method.map((item) => {
-        if (item === 'wechat_notice') {
-          return <span>微信公众号；</span>;
-        }
-        if (item === 'sms_notice') {
-          return <span>短信通知；</span>;
-        }
-        if (item === 'voice_notice') {
-          return <span>语音通知；</span>;
-        }
-      })}
+      <p><Bold>发送方式:</Bold>{message.currentOpenedMessage.data.send_method ? message.currentOpenedMessage.data.send_method.map((item) => {
+        // if (item === 'wechat_notice') {
+        //   return <span>微信公众号；</span>;
+        // }
+        // if (item === 'sms_notice') {
+        //   return <span>短信通知；</span>;
+        // }
+        // if (item === 'voice_notice') {
+        //   return <span>语音通知；</span>;
+        // }
+        return <span>{item}, </span>
+      }) : null}
       </p>
-      <p><Bold>发送时间:</Bold>{new Date(parseInt(message.currentOpenedMessage.data.send_time) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ')}</p>
+      <p><Bold>发送时间:</Bold>{message.currentOpenedMessage.data.send_time}</p>
     </SubContaienr>
     <SubContaienr>
       <MessageFeedbackTable />

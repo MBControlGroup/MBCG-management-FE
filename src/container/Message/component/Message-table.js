@@ -49,17 +49,18 @@ export default class MessageTable extends Component<Props> {
         dataIndex: 'send_method',
         render: text => (
           <div>
-            {text.map((item, index) => {
-                if (item === 'wechat_notice') {
-                  return <span key={ 'mtype' + index }>微信公众号；</span>;
-                }
-                if (item === 'sms_notice') {
-                  return <span key={'mtype' + index}>短信通知；</span>;
-                }
-                if (item === 'voice_notice') {
-                  return <span key={'mtype' + index}>语音通知；</span>;
-                }
-              })}
+            {text ? text.map((item, index) => {
+                // if (item === 'wechat_notice') {
+                //   return <span key={ 'mtype' + index }>微信公众号；</span>;
+                // }
+                // if (item === 'sms_notice') {
+                //   return <span key={'mtype' + index}>短信通知；</span>;
+                // }
+                // if (item === 'voice_notice') {
+                //   return <span key={'mtype' + index}>语音通知；</span>;
+                // }
+                return <span>{item}, </span>
+              }) : null}
           </div>
         ),
       },

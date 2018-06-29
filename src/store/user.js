@@ -1,8 +1,10 @@
 /* @flow */
 import { observable, action } from 'mobx';
 import { persist } from 'mobx-persist';
+import { notification } from 'antd';
 
 import post from '../utils/fetch';
+import history from '../component/History';
 
 class User {
   @observable loginIning = false;
@@ -28,11 +30,16 @@ class User {
       password: user.password,
     };
     try {
-      await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/signin', postData);
+      await post(':9200/signin', postData);
       this.setUser(user);
+      notification.success({ message: '登录成功' });
+      history.push('/task');
     } catch(err) {
-      throw new Error(err);
-      console.log(err)
+      console.log(err);
+      if (err.message === 'server') {
+        notification.error({ message: '服务器内部错误' });
+      }
+      notification.error({ message: '账号或密码错误' });
     }
     finally {
       this.loginIning = false;
@@ -48,11 +55,14 @@ class User {
   @action.bound
   async logout() {
     try {
-      await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/signout', {});
+      await post(':9200/signout', {});
       this.user = null;
       this.isLogin = false;
     } catch (err) {
       console.log(err);
+      if (err.message === 'server') {
+        notification.error({ message: '服务器内部错误' });
+      }
     }
   }
 

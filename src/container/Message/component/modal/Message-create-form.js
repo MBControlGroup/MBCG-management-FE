@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import styled from 'styled-components';
-import { Button, Select, Checkbox } from 'antd';
+import { Button, Select, Checkbox,  } from 'antd';
 
 
 import { observer, inject } from 'mobx-react';
@@ -21,9 +21,10 @@ export const fields = [
     label: '消息主题',
   },
   {
-    name: 'detail',
-    placeholder: '请输入消息正文',
-    label: '消息正文',
+    name: 'num',
+    placeholder: '请输入消息类型',
+    label: '消息类型',
+    value: '',
   },
   {
     name: 'bm_type',
@@ -82,6 +83,18 @@ const ButtonRow = Row.extend`
   align-items: center;
 `;
 
+const Inputfield = styled.input`
+  border: solid 0.5px ${props => props.borderColor};
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+  border-radius: 5px;
+  outline: none;
+  padding: 0 10px 0 10px;
+  &:focus {
+    border: solid 0.5px #1890fc;
+  }
+`;
+
 @inject('message')
 @observer
 export default class MessageCreateForm extends React.Component<Props> {
@@ -94,40 +107,48 @@ export default class MessageCreateForm extends React.Component<Props> {
     return (
       <FormContainer>
         <ButtonRow>
-          {fields.map((field) => {
-            if (field.name === 'detail') {
-              return (
-                <Row>
-                  <TextArea field={form.$(field.name)} key={field.name} cols={60} rows={6} />
-                </Row>
-              );
-            }
-            if (field.name === 'bm_type') {
-              return (
-                <Row>
-                  <label style={{ width: 90, alignSelf: 'flex-start' }}>消息类型:</label>
-                  <Select defaultValue="GT" style={{ width: 500 }} {...form.$(field.name).bind()}>
-                    <Option value="GT">普通消息</Option>
-                    <Option value="Receipt">回执消息</Option>
-                    <Option value="Row">点名消息</Option>
-                  </Select>
-                </Row>
-              );
-            }
-            if (field.name === 'notice_method') {
-              return (
-                <Row>
-                  <label style={{ width: 90, alignSelf: 'flex-start' }}>通知方式:</label>
-                  <CheckboxGroup options={options} {...form.$(field.name).bind()} />
-                </Row>
-              );
-            }
-                       return (
-                         <Row>
-                           <TextInput field={form.$(field.name)} key={field.name} width={500} />
-                         </Row>
-                        )
-                    })}
+          <Row>
+            <TextInput field={form.$('title')} key="title" width={500} />
+          </Row>
+          <Row>
+            <label style={{ width: 90, alignSelf: 'flex-start' }}>消息内容:</label>
+            <textarea style={{ borderColor: '#CCC' }} disabled cols={70} rows={4} value={Number(form.$('num').value) > 0 ? this.props.message.template[Number(form.$('num').value) - 1].content : ''} />
+          </Row>
+          {
+            this.props.message.variables.map((item, index) => {
+              if (Number(form.$('num').value) > 0 && index < this.props.message.template[Number(form.$('num').value) - 1].vars) {
+                return (
+                  <Row key={"variable" + index}>
+                    <label style={{ width: 90, alignSelf: 'flex-start' }}>{`参数${index + 1}`}</label>
+                    <Inputfield value={this.props.message.variables[index]} onChange={(e) => { this.props.message.changeVariableValue(index, e.nativeEvent.target.value) }} />
+                  </Row>
+                )
+              }
+            })
+          }
+          <Row>
+            <label style={{ width: 90, alignSelf: 'flex-start' }}>模版编号:</label>
+            <Select defaultValue="" style={{ width: 500 }} {...form.$('num').bind()}>
+              <Option value="1">邀请码</Option>
+              <Option value="2">初始账号密码</Option>
+              <Option value="3">集合通知</Option>
+              <Option value="4">点名通知</Option>
+              <Option value="5">回执消息</Option>
+              <Option value="6">一般消息</Option>
+            </Select>
+          </Row>
+          <Row>
+            <label style={{ width: 90, alignSelf: 'flex-start' }}>消息类型:</label>
+            <Select defaultValue="GT" style={{ width: 500 }} {...form.$('bm_type').bind()}>
+              <Option value="GT">普通消息</Option>
+              <Option value="Receipt">回执消息</Option>
+              <Option value="Row">点名消息</Option>
+            </Select>
+          </Row>
+          <Row>
+            <label style={{ width: 90, alignSelf: 'flex-start' }}>通知方式:</label>
+            <CheckboxGroup options={options} {...form.$('notice_method').bind()} />
+          </Row>
         </ButtonRow>
         <RowCt>
           <Button type="primary" onClick={form.onSubmit} style={{ marginRight: 10 }}>

@@ -1,9 +1,12 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 import { Tree, Icon, Input, Button, Modal, Table, Popconfirm, Upload, message } from 'antd';
 import styled from 'styled-components'
+
 import * as XLSX from 'xlsx';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
 import { observer, inject } from 'mobx-react';
+
 
 const TreeNode = Tree.TreeNode;
 const Search = Input.Search;
@@ -27,7 +30,7 @@ type PropType = {
   nav: stores.nav,
   personnel: stores.personnel
 }))
-// @unLoginRedirect('/login')
+@unLoginRedirect('/login')
 @observer
 class Organization extends React.Component<PropType> {
   constructor(props: PropType) {
@@ -60,7 +63,7 @@ class Organization extends React.Component<PropType> {
   }
 
   componentWillMount() {
-    // this.props.nav.setSelectedKey('nav_2');
+    this.props.nav.setSelectedKey('nav_4');
     this.state.areaData.push(
     {
       key: '0', isOrg: false, title: '广州市', leaderName: 'test', leaderPhone: '13719323393', children: [
