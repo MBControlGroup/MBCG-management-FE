@@ -71,7 +71,6 @@ function Test(props: PropType) {
           }}
         >
           <Menu.Item key="nav_1">任务管理</Menu.Item>
-          <Menu.Item key="nav_2">人事管理</Menu.Item>
           <Menu.Item key="nav_3">消息管理</Menu.Item>
           <Menu.Item key="nav_4">组织管理</Menu.Item>
         </Menu>

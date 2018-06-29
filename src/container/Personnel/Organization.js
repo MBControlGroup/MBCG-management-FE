@@ -5,7 +5,6 @@ import styled from 'styled-components'
 
 import * as XLSX from 'xlsx';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
-import { observer, inject } from 'mobx-react';
 
 
 const TreeNode = Tree.TreeNode;
