@@ -39,17 +39,7 @@ export default class Login extends Component<Props> {
     loginInForm.$hooks.onSuccess = (form) => {
       const { user } = this.props;
       const { login } = user;
-      return new Promise(async (resolve) => {
-        try {
-          await login(form.values());
-          notification.success({ message: '登录成功' });
-          history.push('/task');
-        } catch (e) {
-          notification.error({ message: e.message });
-        } finally {
-          resolve();
-        }
-      });
+      login(form.values());
     };
     loginInForm.$hooks.onError = (form) => {
       console.log(form.errors());

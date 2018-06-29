@@ -1,87 +1,52 @@
 import { notification } from 'antd';
-import { isProduction, mockingServer, productionServer } from '../app-config/network';
+import { productionServer } from '../app-config/network';
 
 import { emitter } from './';
 
-function myFetch(url, data) {
-  const header = {
-    'Content-Type': 'application/json',
-  };
-  const bodyData = {
-    data,
-  };
-  // const realUrl = isProduction ? (productionServer + url) : (mockingServer + url);
-  const realUrl = url;
-  return fetch(realUrl, {
-    credentials: 'same-origin',
-    method: 'POST',
-    headers: header,
-    body: JSON.stringify(bodyData),
-  })
-    .then((res) => {
-      return res.json();
-    })
-    .then((res) => {
-      return { res };
-    })
-    .catch((err) => {
-      return { err };
-    });
-}
-
-function postErrorHandler(err) {
-  const { message } = err;
-  switch (message) {
-    case 'NETWORK_ERROR':
-      notification.error({
-        message: '网络请求错误',
-        duration: 2,
-      });
-      break;
-    default:
-      break;
-  }
-}
-
 /**
- *
- * @param {string} url  进行匹配的url
- * @param {any} data  需要传输的数据
+ * 基本 POST 请求
+ * @param {String} url - 以 '/' 开头; 或者完整带 http/https 的路径
+ * @param {Object} data - 包体
  */
-async function post(url, data) {
-  let { res, err } = await myFetch(url, data);
-  if (err) {
-    postErrorHandler(err);
-    res = null;
-  } else if (res.code === 200 && res.enmsg === 'ok') {
-    err = null;
-  } else if (res.code === 300) {
-    err = new Error(res.Cnmsg);
-    res = null;
-  } else if (res.code === 302) {
-    // 用户状态失效
-    emitter.emit('USER_STATUS_FAILURE');
-  } else if (res.code === 402) {
-    //
-  } else {
-    notification.error({
-      message: res.cnmsg,
-      duration: 2,
-    });
-    err = new Error(res.cnmsg);
-    res = null;
-  }
+
+function simpleFetch(url, data) {
+  const fullUrl = url.indexOf('http') === -1 ? (productionServer + url) : url;
+  const body = JSON.stringify(data);
   return new Promise((resolve, reject) => {
-    if (res) {
-      return resolve(res);
-    }
-    notification.error({
-      message: '客户端错误：' + err.message,
-      duration: 2,
-    });
-    return reject(err);
+    fetch(fullUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body,
+    })
+      .then((res) => {
+        if (res.status === 500) {
+          throw new Error('server');
+        }
+        if (res) {
+          return res.json();
+        }
+        throw new Error('server');
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.code === 200 && res.enmsg === 'ok') {
+          resolve(res);
+        } else if (res.code === 302) {
+          // log out
+          reject(new Error('authorization'));
+        } else {
+          reject(new Error(res.enmsg));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(new Error('server error'));
+      });
   });
 }
 
-
-export default post;
+export default simpleFetch;

@@ -23,6 +23,11 @@ const TaskScreen = Loadable({
 });
 
 const PersonnelScreen = Loadable({
+  loader: () => import('./container/Personnel/Personnel'),
+  loading: () => (<p>loading...</p>),
+});
+
+const OrgScreen = Loadable({
   loader: () => import('./container/Personnel/Organization'),
   loading: () => (<p>loading...</p>),
 });
@@ -52,9 +57,10 @@ class AppRouter extends React.Component {
             <Route exact path="/task" component={TaskScreen} />
             <Route exact path="/task-detail/:id" component={TaskDetailScreen} />
             <Route exact path="/personnel" component={PersonnelScreen} />
+            <Route exact path="/organization" component={OrgScreen} />
             <Route exact path="/message" component={MessageScreen} />
+            <Redirect to="/task" />
           </BasicLayout>
-          <Redirect to="/task" />
         </Switch>
       </Router>
     );

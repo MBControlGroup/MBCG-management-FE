@@ -38,10 +38,8 @@ type PropType = {
     isLogin: stores.user.isLogin,
     nav: stores.nav,
 }))
-
-// TODO:FIX login
-// @unLoginRedirect('/login')
-// @observer
+@unLoginRedirect('/login')
+@observer
 class Task extends Component<PropType> {
     state = {taskCreateVisible: false};
 

@@ -36,7 +36,7 @@ const fields = [
     name: 'password',
     label: '密码',
     placeholder: '请输入登录密码',
-    rules: 'required|string|between:5,25',
+    rules: 'required|string',
     icon: 'lock',
     size: 15,
   },

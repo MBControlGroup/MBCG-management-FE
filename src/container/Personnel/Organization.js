@@ -1,6 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { inject, observer } from 'mobx-react';
 import { Tree, Icon, Input, Button, Modal, Table, Popconfirm, Upload, message } from 'antd';
 import styled from 'styled-components'
+import unLoginRedirect from '../../component/hoc/unlogin-redirect';
+
 const TreeNode = Tree.TreeNode;
 const Search = Input.Search;
 
@@ -36,6 +39,12 @@ type PropType = {
   // areaData: Array
 };
 
+@inject(stores => ({
+  isLogin: stores.user.isLogin,
+  nav: stores.nav,
+}))
+@unLoginRedirect('/login')
+@observer
 class Organization extends React.Component {
   constructor() {
     super();
@@ -59,7 +68,9 @@ class Organization extends React.Component {
     personReserveContact:'',
     personResConPhone: ''
   }
+
   componentWillMount() {
+    this.props.nav.setSelectedKey('nav_4');
     this.state.areaData.push(
     {
       key: '0', title: '广州市', leaderName: 'test', leaderPhone: '123456', children: [],

@@ -50,11 +50,16 @@ class Message extends Component<PropType> {
       try {
         console.log(form.values());
         const { notice_method, ...other } = form.values();
-        await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/BMmanage/createMes', {
+        console.log(notice_method.indexOf('wechat'));
+        await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/BMmanage/createMes?office_id=1&org_id=1', {
           ...other,
-          wechat_notice: !notice_method.indexOf('wechat') !== -1,
-          sms_notice: !notice_method.indexOf('sms') !== -1,
-          voice_notice: !notice_method.indexOf('voice') !== -1,
+          wechat_notice: !notice_method.indexOf('wechat') === -1,
+          sms_notice: !notice_method.indexOf('sms') === -1,
+          voice_notice: !notice_method.indexOf('voice') === -1,
+          var1: this.props.message.variables[0],
+          var2: this.props.message.variables[1],
+          var3: this.props.message.variables[2],
+          var4: this.props.message.variables[3],
         });
         notification.success({ message: '创建成功', duration: 2 });
         props.message.getMessages();
