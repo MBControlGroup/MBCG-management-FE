@@ -22,23 +22,23 @@ type PropType = {
   nav: Object,
   personnel: Object
 }
-// @inject(stores => ({
-//   isLogin: stores.user.isLogin,
-//   nav: stores.nav,
-//   personnel: stores.personnel
-// }))
+@inject(stores => ({
+  isLogin: stores.user.isLogin,
+  nav: stores.nav,
+  personnel: stores.personnel
+}))
 // @unLoginRedirect('/login')
-// @observer
+@observer
 class Organization extends React.Component<PropType> {
   constructor(props: PropType) {
     super(props);
-    // try {
-    //   this.props.personnel.getOrgs();
-    // } catch (err) {
-    //   console.log(err);
-    // } finally {
-    //   console.log("finished");
-    // }
+    try {
+      this.props.personnel.getOrgs();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log("finished");
+    }
   }
   state = {
     addOrgModalVisible: false,
@@ -56,7 +56,7 @@ class Organization extends React.Component<PropType> {
     personIdentity: '',
     personPosition: '',
     personUnit:'',
-    personAddress: '',
+    // personcommander_id: '',
   }
 
   componentWillMount() {
@@ -74,10 +74,8 @@ class Organization extends React.Component<PropType> {
         ],soldiers: []}
       ],
       soldiers: [
-        { soldier_id: 0, name: '张大', phone: '13719323393', identity:'440582000000000000', position: 'MB', unit: '广州',
-          address: '广州番禺'},
-        { soldier_id: 1, name: '张二', phone: '13719323393', identity:'440582000000000001', position: 'MB', unit: '广州',
-        address: '广州海珠'}
+        { soldier_id: 0, name: '张大', phone: '13719323393', identity:'440582000000000000', position: 'MB', unit: '广州'},
+        { soldier_id: 1, name: '张二', phone: '13719323393', identity:'440582000000000001', position: 'MB', unit: '广州'}
       ]
     })
     this.setState( {
@@ -92,7 +90,7 @@ class Organization extends React.Component<PropType> {
         {title: '职务', dataIndex: 'position', key:'position',
         sorter: (a, b) => this.compareByAlph(a.position, b.position)},
         {title: '单位', dataIndex: 'unit', key: 'unit'},
-        {title: '家庭住址', dataIndex: 'address', key: 'address'},
+        // {title: '指挥官id', dataIndex: 'commander_id', key: 'commander_id'},
         {
           title: '操作',
           dataIndex: 'operation',
@@ -150,6 +148,7 @@ class Organization extends React.Component<PropType> {
         that.setState({
           areaData: source
         })
+        message.success("upload file success");
     };
 
     // 以二进制方式打开文件
@@ -288,7 +287,7 @@ class Organization extends React.Component<PropType> {
   // 添加人员
   addPerson = ()=> {
     if (this.state.personName === '' || this.state.personPhone === '' ||
-        this.state.personIdentity === '' || this.state.personAddress === ''
+        this.state.personIdentity === ''
       || this.state.personPosition === '' || this.state.personUnit === '') {
       message.error('请填写完整信息')
       return;
@@ -321,11 +320,10 @@ class Organization extends React.Component<PropType> {
       soldier_id: len, name: this.state.personName, phone: this.state.personPhone, 
       identity: this.state.personIdentity,
       position: this.state.personPosition, unit: this.state.personUnit,
-      address: this.state.personAddress
     })
     this.setState({
       personName: '', personPhone: '', personIdentity: '',
-      personPosition: '', personUnit: '', personAddress: ''
+      personPosition: '', personUnit: ''
     })
     this.setAddPersonModal(false);
   }
@@ -334,7 +332,10 @@ class Organization extends React.Component<PropType> {
     this.setState({
       curSelectedKey: selectedKeys
     })
-    this.state.curNode = this.findCurNode(selectedKeys)
+    this.setState({
+      curNode: this.findCurNode(this.state.areaData)
+    })
+    // this.state.curNode = this.findCurNode(this.state.areaData);
     console.log('selected', selectedKeys,info);
   }
   onCheck = (checkedKeys, info) => {
@@ -344,7 +345,7 @@ class Organization extends React.Component<PropType> {
     return areaData.map((item) => {
       if (item.children) {
         return (
-          <TreeNode title={item.isOrg ? <span style={{ color: '#009922' }}>{item.title}</span> : item.title} key={item.key} dataRef={item}>
+          <TreeNode title={item.isOrg ?  item.title : <span style={{ fontWeight:"bold" }}>{item.title}</span>} key={item.key} dataRef={item}>
             {this.loop(item.children)}
           </TreeNode>
         );
@@ -392,11 +393,11 @@ class Organization extends React.Component<PropType> {
       personUnit: event.target.value
     })
   }
-  getPersonAddress = (event) => {
-    this.setState({
-      personAddress: event.target.value
-    })
-  }
+  // getPersoncommander_id = (event) => {
+  //   this.setState({
+  //     personcommander_id: event.target.value
+  //   })
+  // }
   render() {
     let cur = this.findCurNode(this.state.areaData);
     return (
@@ -516,11 +517,11 @@ class Organization extends React.Component<PropType> {
             onChange={this.getPersonUnit}
             />
           </RowInput>
-          <RowInput>
-            <span>家庭住址　</span><Input defaultValue={this.state.personAddress} type='text' placeholder='请输入' style={{width:'380px'}}
-            onChange={this.getPersonAddress}
+          {/* <RowInput>
+            <span>指挥官id　</span><Input defaultValue={this.state.personcommander_id} type='text' placeholder='请输入' style={{width:'380px'}}
+            onChange={this.getPersoncommander_id}
             />
-          </RowInput>
+          </RowInput> */}
       </Modal>
       </Container>
     );
