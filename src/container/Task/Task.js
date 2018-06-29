@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import TaskTable from './component/TaskTable';
 import TaskCreate from './component/TaskCreate';
 import TaskIM from './component/TaskIM';
-import TaskDetail from './component/TaskDetail'
 
 import {observer, inject} from 'mobx-react';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
@@ -108,9 +107,6 @@ class Task extends Component<PropType> {
                             this.taskCreate = instance;
                         }}/>
                     </Modal>
-
-                    <TaskDetail/>
-
                     <TaskIM/>
                 </div>
             </Container>
