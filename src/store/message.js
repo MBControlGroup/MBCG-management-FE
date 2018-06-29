@@ -41,7 +41,10 @@ class Message {
     async getCurrentOpenedMessage() {
       this.isInitingOpenedMessage = true;
       try {
-        const { data } = await post(`https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/BMmanage/${this.currentOpenedMessageID}`, {});
+        const { data } = await post(`:9300/BMmanage/${this.currentOpenedMessageID}`, {
+          pn: 1,
+          pc: 100,
+        });
         this.currentOpenedMessage = data;
       } catch (err) {
         console.log(err);
@@ -54,7 +57,7 @@ class Message {
     async getMessages() {
       this.isLoadingMessages = true;
       try {
-        const { data } = await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/getAllMes', {
+        const { data } = await post(':9300/BMmanage/getAllMes', {
           pn: this.currentPage,
           pc: this.currentPageSize,
         });

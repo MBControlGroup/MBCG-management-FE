@@ -49,4 +49,44 @@ function simpleFetch(url, data) {
   });
 }
 
+
+export const simpleFetchNoToken = (url, data) => {
+  const fullUrl = url.indexOf('http') === -1 ? (productionServer + url) : url;
+  const body = JSON.stringify(data);
+  return new Promise((resolve, reject) => {
+    fetch(fullUrl, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body,
+    })
+      .then((res) => {
+        if (res.status === 500) {
+          throw new Error('server');
+        }
+        if (res) {
+          return res.json();
+        }
+        throw new Error('server');
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.code === 200 && res.enmsg === 'ok') {
+          resolve(res);
+        } else if (res.code === 302) {
+          // log out
+          reject(new Error('authorization'));
+        } else {
+          reject(new Error(res.enmsg));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(new Error('server error'));
+      });
+  });
+};
+
 export default simpleFetch;

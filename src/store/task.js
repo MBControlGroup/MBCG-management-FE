@@ -2,12 +2,14 @@
 import { observable, action, computed } from 'mobx';
 import { persist } from 'mobx-persist';
 
-import post from '../utils/fetch';
+import post, { simpleFetchNoToken } from '../utils/fetch';
 
 class Task {
     @observable currentTaskDetail = null;
     @observable currentTaskID = 1;
     @observable currentPeopleLoc = [];
+    @observable currentResponseDetail = null;
+    @observable currenGatherDetail = null;
     @observable isLoading = false;
     @observable activeSoldierID = 0;
 
@@ -26,14 +28,24 @@ class Task {
     async getTaskDetail() {
       this.isLoading = true;
       try {
-        const { data } = await post(`https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/task/detail/${this.currentTaskID}`);
+        const { data } = await post(`:12380/task/detail/22`);
         this.currentTaskDetail = data;
-        const loc_result = await post('https://dsn.apizza.net/mock/dc1fee80afcc841be1b4bc3044c5ef27/loc/getAllLocs', {
+        const loc_result = await simpleFetchNoToken('https://private-95a754-test16836.apiary-mock.com/loc/getAllLocs', {
           task_id: this.currentTaskID,
           pn: 1,
         });
         this.currentPeopleLoc = loc_result.data.data;
-        console.log(this.currentPeopleLoc);
+        const res_result = await post(`:12380/task/response/22`, {
+          pn: 1,
+          pc: 100,
+        });
+        this.currentResponseDetail = res_result.data;
+        const gather_result = await post(`:12380/task/gather/22`, {
+          pn: 1,
+          pc: 100,
+        });
+        this.currenGatherDetail = gather_result.data;
+        console.log(this.currentResponseDetail, this.currenGatherDetail);
       } catch (err) {
         console.log('hi');
       } finally {

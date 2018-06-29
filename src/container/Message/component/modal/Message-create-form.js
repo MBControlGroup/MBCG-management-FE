@@ -118,7 +118,7 @@ export default class MessageCreateForm extends React.Component<Props> {
             this.props.message.variables.map((item, index) => {
               if (Number(form.$('num').value) > 0 && index < this.props.message.template[Number(form.$('num').value) - 1].vars) {
                 return (
-                  <Row>
+                  <Row key={"variable" + index}>
                     <label style={{ width: 90, alignSelf: 'flex-start' }}>{`参数${index + 1}`}</label>
                     <Inputfield value={this.props.message.variables[index]} onChange={(e) => { this.props.message.changeVariableValue(index, e.nativeEvent.target.value) }} />
                   </Row>
