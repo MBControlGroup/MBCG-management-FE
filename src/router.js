@@ -38,7 +38,7 @@ const MessageScreen = Loadable({
 });
 
 const TaskDetailScreen = Loadable({
-  loader: () => import('./container/TaskDetail/TaskDetail'),
+  loader: () => import('./container/Task/component/TaskDetail'),
   loading: () => (<p>loading...</p>),
 });
 

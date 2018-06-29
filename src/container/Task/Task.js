@@ -1,12 +1,12 @@
 // @flow
 import React, {Component} from 'react';
-import styled from 'styled-components';
 import {Modal, Menu, Button} from 'antd';
+import styled from 'styled-components';
 
 import TaskTable from './component/TaskTable';
 import TaskCreate from './component/TaskCreate';
 import TaskIM from './component/TaskIM';
-
+import TaskDetail from './component/TaskDetail'
 
 import {observer, inject} from 'mobx-react';
 import unLoginRedirect from '../../component/hoc/unlogin-redirect';
@@ -41,19 +41,31 @@ type PropType = {
 @unLoginRedirect('/login')
 @observer
 class Task extends Component<PropType> {
-    state = {taskCreateVisible: false};
+    constructor() {
+        super();
+        this.state = {
+            taskCreateVisible: false,
+            currentSelect: 'working',
+        };
+    }
 
     componentWillMount() {
         this.props.nav.setSelectedKey('nav_1');
     }
 
-    showTaskCreate = () => {
-        this.setState({
-            taskCreateVisible: true,
-        });
+    handleMenuClick = (item) => {
+        switch (item.key) {
+            case "1":
+                this.setState({currentSelect: 'working'});
+                break;
+            case "2":
+                this.setState({currentSelect: 'done'});
+                break;
+        }
     };
 
-    hideTaskCreate = () => {
+    taskCreateOK = () => {
+        this.taskCreate.sendData();
         this.setState({
             taskCreateVisible: false,
         });
@@ -63,29 +75,41 @@ class Task extends Component<PropType> {
         return (
             <Container>
                 <div>
-                    <TaskButton type="primary" onClick={this.showTaskCreate}>
+                    <TaskButton type="primary" onClick={() => {
+                        this.setState({
+                            taskCreateVisible: true,
+                        });
+                    }}>
                         +发布任务
                     </TaskButton>
                 </div>
                 <div>
-                    <MenuStyled mode="horizontal">
+                    <MenuStyled mode="horizontal" defaultSelectedKeys={["1"]} onClick={this.handleMenuClick}>
                         <Menu.Item key="1">正在进行</Menu.Item>
                         <Menu.Item key="2">已完成</Menu.Item>
                     </MenuStyled>
 
-                    <TaskTable/>
+                    <TaskTable type={this.state.currentSelect}/>
 
                     <Modal
                         title="发布任务"
                         width={960}
                         visible={this.state.taskCreateVisible}
                         okText="发布"
-                        onOk={this.hideTaskCreate}
+                        onOk={this.taskCreateOK}
                         cancelText="取消"
-                        onCancel={this.hideTaskCreate}
+                        onCancel={() => {
+                            this.setState({
+                                taskCreateVisible: false,
+                            });
+                        }}
                     >
-                        <TaskCreate/>
+                        <TaskCreate ref={instance => {
+                            this.taskCreate = instance;
+                        }}/>
                     </Modal>
+
+                    <TaskDetail/>
 
                     <TaskIM/>
                 </div>
